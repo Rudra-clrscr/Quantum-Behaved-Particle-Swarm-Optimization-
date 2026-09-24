@@ -1,21 +1,20 @@
 """
 test_impact.py
 --------------
-Tests for the real-world impact conversions (issue #12).
-
-The important one is section 4: the dashboard keeps its own copy of the
-conversion factors so it can render without a round trip, and this asserts that
-copy still matches `app/core/impact.py`. Before these were centralised the page
-carried two different CO2 factors — a KPI card used 0.22 kg/km while the impact
-panel derived 0.335 kg/km — so a single run displayed two emissions figures 52%
-apart. A judge comparing the two would have caught it.
+Tests for the real-world impact conversions used by `scripts/impact_report.py`
+and `data/impact_report.md`.
 
 Runs offline. No network, no solver.
+
+Note: this file originally also asserted that a frontend dashboard's copy of
+these conversion factors matched `app/core/impact.py` (guarding against two
+different CO2 factors being hardcoded in two places). That check was dropped
+along with the frontend when this repo was trimmed down from MargdarshaQ to a
+standalone algorithmic artifact — it no longer applies here.
 
 Run with:  python test_impact.py
 """
 
-import re
 import sys
 
 from app.core.impact import (
@@ -77,36 +76,7 @@ for bad in (0, -1):
 
 print()
 print("=" * 74)
-print("4. The dashboard's copy of the factors has not drifted")
-print("=" * 74)
-
-with open("frontend/dashboard.html", encoding="utf-8") as fh:
-    html = fh.read()
-
-
-def js_number(name):
-    m = re.search(rf"{name}:\s*([\d.]+)", html)
-    return float(m.group(1)) if m else None
-
-
-check("dashboard km/litre matches impact.py",
-      js_number("kmPerLitre") == ASSUMPTIONS.km_per_litre,
-      f"js={js_number('kmPerLitre')} py={ASSUMPTIONS.km_per_litre}")
-check("dashboard kg CO2/litre matches impact.py",
-      js_number("kgCO2PerLitre") == ASSUMPTIONS.kg_co2_per_litre,
-      f"js={js_number('kgCO2PerLitre')} py={ASSUMPTIONS.kg_co2_per_litre}")
-check("dashboard working days matches impact.py",
-      js_number("workingDaysPerYear") == ASSUMPTIONS.working_days_per_year,
-      f"js={js_number('workingDaysPerYear')} py={ASSUMPTIONS.working_days_per_year}")
-
-# The regression this guards: a second, different CO2 factor hardcoded elsewhere.
-stray = re.findall(r"\*\s*0\.22\b|\*\s*0\.335\b", html)
-check("no hardcoded kg-CO2-per-km constant remains", not stray, f"{stray}")
-check("dashboard derives CO2/km in one place", "function kgCo2PerKm" in html)
-
-print()
-print("=" * 74)
-print("5. Changing an assumption changes every derived figure")
+print("4. Changing an assumption changes every derived figure")
 print("=" * 74)
 
 thirsty = ImpactAssumptions(km_per_litre=4.0)     # half the economy
