@@ -19,12 +19,14 @@ Advanced Network Technologies and Intelligent Computing), IIIT Lucknow.
 Two modifications on top of standard QPSO for CVRPTW:
 
 1. **Jump-cap fix** — QPSO's stochastic position update can produce
-   dimension-dependent jump instability as problem size grows. This is
-   identified and corrected in [`app/core/qpso_vrp.py`](app/core/qpso_vrp.py).
-2. **Memetic hybridization** — QPSO's global search is paired with 2-opt /
-   Or-opt local search refinement ([`app/core/local_search.py`](app/core/local_search.py))
-   to close the gap against standard PSO on mid-sized instances (40–60
-   customers).
+   dimension-dependent jump instability as problem size grows. A cap on the
+   jump that tightens with dimension mitigates it
+   ([`app/core/qpso_vrp.py`](app/core/qpso_vrp.py)); the effect is measurable
+   at 60 customers and absent at 20.
+2. **Memetic hybridization** — QPSO's global search is paired with 2-opt and
+   single-customer relocation ([`app/core/local_search.py`](app/core/local_search.py)).
+   On its own QPSO trails standard PSO at 40–60 customers; with local search it
+   leads, at a runtime cost.
 
 Plus an optional **time-dependent, congestion-aware** extension
 ([`app/core/traffic_profile.py`](app/core/traffic_profile.py)) that prices
@@ -38,12 +40,13 @@ validation than everything else here.
 ```
 app/core/
   qpso_vrp.py               # QPSO with jump-cap fix + memetic hybridization
-  local_search.py           # 2-opt / Or-opt operators
+  local_search.py           # 2-opt / single-customer relocation operators
   vrp_problem.py            # CVRPTW formulation, synthetic instance generator
   graph_model.py            # Traffic network model
-  exact_vrp.py               # Exact solver (branch-and-bound / MILP ground truth)
+  exact_vrp.py               # Exact solver for small instances (subset enumeration + DP)
   classical_baselines_vrp.py # GA, SA, standard PSO, greedy nearest-neighbor baselines
   benchmark_vrp.py           # Convergence / scalability / robustness benchmark suite
+  benchmark_trials.py        # Repeated (algorithm, seed) runs in a process pool
   benchmark_solomon.py       # Solomon-instance benchmark runner
   solomon.py                 # Solomon (1987) instance parser + best-known lookups
   traffic_profile.py         # Time-of-day congestion model
@@ -53,19 +56,29 @@ app/core/
 scripts/
   run_solomon_benchmark.py   # Reproduces data/solomon_results.md
   impact_report.py           # Reproduces data/impact_report.md
-  measure_exact_vrp.py       # Reproduces the exact-solver validation numbers
+  measure_exact_vrp.py       # Exact-solver runtime by instance size
+  run_ablations.py           # Reproduces data/ablation_results.md (exact gap, jump-cap, local search)
+  generate_stress_test_cache.py # Measures scalability -> data/stress_test_synthetic.json
+  plot_benchmark_charts.py   # Repeated-trial and scalability figures + data/benchmark_charts.md
 
 data/
   solomon_results.md         # Solomon CVRPTW benchmark results (this repo's headline numbers)
   impact_report.md           # Distance/time savings converted to fuel and CO2
+  ablation_results.md/.json  # Exact-optimum gap, jump-cap and local-search ablations
+  benchmark_charts.md        # Table view of every figure below (repeated trials, scalability)
+  stress_test_synthetic.json # Measured scalability, synthetic graph (reproducible offline)
+  stress_test_delhi.json     # Measured scalability, New Delhi OSM extract (upstream app)
+  trials_*.png, scalability_*.png, ablation_*.png
   benchmarks/solomon/        # Solomon (1987) instance files (C101, C201, R101, R201, RC101, RC201)
   vrp_convergence.png, vrp_scalability_*.png
 
 docs/
-  FORMULATION.md             # Mathematical formulation (CVRPTW, graph model, QPSO update rule)
+  FORMULATION.md             # Mathematical formulation (CVRPTW, objective, QPSO update rule)
+  RESULTS.md                 # Results section, written up from the generated data
 
 tests/                        # pytest suite covering the algorithm, local search,
-                               # exact solver, Solomon parsing, and time-dependent pricing
+                               # exact solver, Solomon parsing, time-dependent pricing,
+                               # repeated trials, and FORMULATION.md-matches-code
 ```
 
 ## Setup
@@ -89,24 +102,50 @@ pytest tests/
 ```bash
 python scripts/run_solomon_benchmark.py --max-iter 200 --seed 1   # -> data/solomon_results.md
 python scripts/impact_report.py                                    # -> data/impact_report.md
-python scripts/measure_exact_vrp.py                                 # exact-solver validation
+python scripts/measure_exact_vrp.py                                 # exact-solver runtime by size
+python scripts/run_ablations.py                                     # -> data/ablation_results.md
+python scripts/generate_stress_test_cache.py                        # -> data/stress_test_synthetic.json
+python scripts/plot_benchmark_charts.py                             # -> data/benchmark_charts.md + figures
 python -m app.core.benchmark_vrp                                    # convergence/scalability plots
 ```
 
+## The mathematical model
+
+The problem is a CVRPTW over a road graph, optionally time-dependent. The
+formal model is in [docs/FORMULATION.md](docs/FORMULATION.md). It covers the
+decision variables, the objective, the constraints, and the QPSO update with
+the parameter values used.
+
+The objective being minimised is:
+
+$$\mathcal{F} \;=\; w_T \cdot T_{\text{total}} \;+\; w_D \cdot D_{\text{total}} \;+\; \lambda_{\text{cap}} \cdot \mathcal{P}_{\text{cap}} \;+\; \lambda_{\text{time}} \cdot \mathcal{P}_{\text{time}} \;+\; \lambda_{\text{idle}} \cdot \mathcal{P}_{\text{idle}}$$
+
+It is a weighted sum of fleet time and distance ($w_T = 0.6$, $w_D = 0.4$ on the
+synthetic instances; Solomon instances use distance alone). Capacity and time
+windows are soft penalties. Every solver, including the exact one, calls the
+same `evaluate_solution`, and
+[`tests/test_formulation_matches_code.py`](tests/test_formulation_matches_code.py)
+checks that the equations in the document reproduce its output exactly.
+
 ## Results
 
-Full tables and methodology are in [`data/solomon_results.md`](data/solomon_results.md)
-and [`data/impact_report.md`](data/impact_report.md). Headline points, each
-labeled with how strong the evidence behind it currently is:
+The full write-up, with the setup, every table and the limitations, is in
+[`docs/RESULTS.md`](docs/RESULTS.md). The raw tables are in
+[`data/ablation_results.md`](data/ablation_results.md),
+[`data/benchmark_charts.md`](data/benchmark_charts.md),
+[`data/solomon_results.md`](data/solomon_results.md) and
+[`data/impact_report.md`](data/impact_report.md). Headline claims, each graded
+by the strength of its evidence:
 
-| Claim | Evidence |
-|---|---|
-| Jump-cap fix restores stability at scale | Strong — specific, measurable before/after |
-| Memetic hybridization closes the gap vs. standard PSO (40–60 customers) | Strong |
-| Exact-solver validation (9 customers, QPSO matches optimal) | Strong |
-| Solomon benchmark: 12.5–34.7% gap vs. best-known on feasible runs (100 customers) | Strong, and honestly reported — infeasible baseline runs are shown as infeasible, not scored on distance |
-| 5-seed robustness (mean ± std) | Strong |
-| Time-dependent congestion-aware routing | Preliminary — see below |
+| Claim | Evidence | Strength |
+|---|---|---|
+| QPSO + LS reaches the exact optimum on small instances | 47/60 runs at 6–9 customers; median gap ≤ 0.56% | Strong up to 8 customers; weaker at 9 |
+| Jump cap improves QPSO as dimension grows | Mean fitness halved at 60 customers, no effect at 20 | Moderate: 5 seeds, one instance per size |
+| QPSO + LS beats standard PSO, GA, SA at 20–60 customers | Lowest mean at every size; 14/15 paired wins over PSO | Strong at equal particles/iterations; unequal in time |
+| The gain comes from QPSO specifically | QPSO *alone* is worse than PSO at 40–60 | Not supported yet: needs a PSO + local search arm |
+| Solomon benchmark | Feasible on 4/6; 12.5–34.7% above best-known distance | Moderate: one seed; objective is distance, not Solomon's hierarchy |
+| Scales to large instances | Times out at 100 customers (90 s) and 200 (300 s) | Not supported: runtime is the main limitation |
+| Time-dependent congestion-aware routing | 5.8% on one instance | Preliminary; see below |
 
 Note on the Solomon table: Solomon's objective is hierarchical (fewest
 vehicles first, then shortest distance), and a run that violates a time
