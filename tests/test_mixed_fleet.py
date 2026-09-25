@@ -78,8 +78,8 @@ def test_per_vehicle_values_are_read_by_index():
 
 def test_a_vehicle_past_the_end_of_the_list_falls_back():
     """
-    The fleet is resized mid-replan (see dynamic_vrp), and a van with no entry
-    should cost the ordinary amount rather than stop the solve.
+    A factor list shorter than the fleet must not stop the solve: a van with
+    no entry costs the ordinary amount.
     """
     problem = make(speeds=[0.6])
     assert problem.speed_factor_for(99) == 1.0
