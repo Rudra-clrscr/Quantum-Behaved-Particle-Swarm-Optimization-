@@ -15,11 +15,18 @@ seeds so a claim never rests on one lucky run.
   C. Local-search ablation. QPSO with and without the memetic local search,
      against standard PSO and GA, at the same particle / population budget.
 
+  D. Local-search attribution. Does QPSO benefit from local search more than
+     standard PSO does? Four arms -- QPSO, QPSO + LS, PSO, PSO + LS -- where
+     both "+ LS" arms run the identical memetic step (local_search.py: same
+     interval, passes, acceptance, reinjection). Only the base swarm differs,
+     so QPSO+LS - PSO+LS is what remains once local search is accounted for.
+
 Writes data/ablation_results.md (tables), data/ablation_results.json (every
 raw run) and two figures:
 
     data/ablation_jump_cap.png
     data/ablation_local_search.png
+    data/ablation_ls_attribution.png
 
     python scripts/run_ablations.py
     python scripts/run_ablations.py --seeds 10 --sizes 20 40 60 80
@@ -78,9 +85,9 @@ def _run(task):
             use_local_search=(config == "qpso_ls"),
             max_jump_factor=(math.inf if config == "qpso_nocap" else None),
         ).optimize().best_solution
-    elif config == "standard_pso":
-        sol = run_standard_pso_vrp(problem, n_particles=N_PARTICLES, max_iter=max_iter,
-                                   seed=seed).best_solution
+    elif config in ("standard_pso", "pso_ls"):
+        sol = run_standard_pso_vrp(problem, n_particles=N_PARTICLES, max_iter=max_iter, seed=seed,
+                                   use_local_search=(config == "pso_ls")).best_solution
     elif config == "ga":
         sol = run_ga_vrp(problem, pop_size=N_PARTICLES, max_iter=max_iter, seed=seed).best_solution
     else:
@@ -175,6 +182,60 @@ def _paired_wins(runs, a, b, sizes):
     return out
 
 
+def _feasible_stats(runs, config, n):
+    """Mean and std over feasible runs only, plus (feasible, total)."""
+    rs = [r for r in runs if r["n"] == n and r["config"] == config]
+    f = [r["fitness"] for r in rs if r["feasible"]]
+    if not f:
+        return None, None, 0, len(rs)
+    return statistics.mean(f), statistics.pstdev(f), len(f), len(rs)
+
+
+def _cell(runs, config, n):
+    mean, std, k, tot = _feasible_stats(runs, config, n)
+    if mean is None:
+        return f"— ({k}/{tot} feasible)"
+    return f"{mean:.1f} ± {std:.1f} ({k}/{tot})"
+
+
+def _attribution_rows(runs, sizes):
+    rows = []
+    for n in sizes:
+        cells = [_cell(runs, c, n) for c in ("qpso", "qpso_ls", "standard_pso", "pso_ls")]
+        q = _feasible_stats(runs, "qpso_ls", n)[0]
+        p = _feasible_stats(runs, "pso_ls", n)[0]
+        delta = "—" if q is None or p is None else f"{q - p:+.1f} ({100 * (q - p) / p:+.1f}%)"
+        rows.append(f"| {n} | " + " | ".join(cells) + f" | {delta} |")
+    return rows
+
+
+def _paired_diffs(runs, a, b, n):
+    ra = {r["seed"]: r for r in runs if r["n"] == n and r["config"] == a}
+    rb = {r["seed"]: r for r in runs if r["n"] == n and r["config"] == b}
+    return [(ra[s], rb[s]) for s in sorted(set(ra) & set(rb))]
+
+
+def _paired_detail(runs, a, b, sizes):
+    """
+    Per-seed comparison of a against b on the optimiser's own objective
+    (penalised fitness) over all seeds, and separately over the seeds where
+    both runs are feasible.
+    """
+    rows = []
+    for n in sizes:
+        pairs = _paired_diffs(runs, a, b, n)
+        d = [x["fitness"] - y["fitness"] for x, y in pairs]
+        wins = sum(1 for v in d if v < -1e-9)
+        ties = sum(1 for v in d if abs(v) <= 1e-9)
+        both = [x["fitness"] - y["fitness"] for x, y in pairs if x["feasible"] and y["feasible"]]
+        both_txt = (f"{len(both)}/{len(pairs)}, median {statistics.median(both):+.1f}"
+                    if both else f"0/{len(pairs)}")
+        rows.append(f"| {n} | {wins}/{len(pairs)} | {ties}/{len(pairs)} "
+                    f"| {len(pairs) - wins - ties}/{len(pairs)} "
+                    f"| {statistics.median(d):+.1f} | {both_txt} |")
+    return rows
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -204,7 +265,7 @@ def main() -> int:
 
     # ---- B + C. ablations ----------------------------------------------------
     print("B/C. Jump-cap and local-search ablations...")
-    bc_configs = ["qpso_ls", "qpso", "qpso_nocap", "standard_pso", "ga"]
+    bc_configs = ["qpso_ls", "qpso", "qpso_nocap", "standard_pso", "pso_ls", "ga"]
     bc_tasks = [(c, n, 1, 150, s, args.max_iter)
                 for n in args.sizes for c in bc_configs for s in seeds]
     bc_runs = _pool_map(bc_tasks, args.workers)
@@ -227,6 +288,14 @@ def main() -> int:
     _gap_plot([r for r in bc_runs if r["config"] in ("qpso_ls", "qpso", "standard_pso", "ga")],
               ls_cfg, args.sizes, f"Local-search ablation ({args.seeds} seeds)",
               "data/ablation_local_search.png")
+    # Only the two + LS arms: the "alone" arms are in ablation_local_search.png, and on
+    # this axis they would squash the comparison this figure exists for.
+    attr_cfg = [("qpso_ls", "QPSO + LS", SLOT[0], "o"),
+                ("pso_ls", "PSO + LS", SLOT[1], "s")]
+    _gap_plot([r for r in bc_runs if r["config"] in ("qpso_ls", "pso_ls")],
+              attr_cfg, args.sizes,
+              f"Same local search on both swarms ({args.seeds} seeds)",
+              "data/ablation_ls_attribution.png")
 
     # ---- tables --------------------------------------------------------------
     md = [
@@ -285,6 +354,47 @@ def main() -> int:
     md += ["", "Figure: `ablation_local_search.png`. Runtimes were measured with runs executing "
            "in parallel on a shared machine, so compare them within a table, not with the "
            "single-process timings in `stress_test_*.json`.", ""]
+
+    md += ["## D. Local-search attribution: QPSO + LS against PSO + LS", "",
+           "Does QPSO benefit from local search more than standard PSO does, or does local "
+           "search help any swarm about equally? Both \"+ LS\" arms call the same memetic step "
+           "(`app/core/local_search.py`: refine the swarm's best every 15 iterations with 2 "
+           "passes of 2-opt + Or-opt, accept only a strict improvement, reinject into the worst "
+           "particle, one 3-pass polish at the end). Same instances, seeds, particle count and "
+           "iteration budget as B and C; only the base swarm differs.",
+           "",
+           "Fitness is mean ± std over **feasible runs only**, with the feasible count beside "
+           "it; an arm with no feasible run has no mean. Δ is the difference of those means, "
+           "negative when QPSO + LS is better.", "",
+           "| Customers | QPSO alone | QPSO + LS | PSO alone | PSO + LS | Δ (QPSO+LS − PSO+LS) |",
+           "|---|---|---|---|---|---|"]
+    md += _attribution_rows(bc_runs, args.sizes)
+    md += ["", "Paired per seed, QPSO + LS against PSO + LS. \"Better\" is judged on the "
+           "penalised fitness both optimisers minimise, so every seed counts; the last column "
+           "repeats the comparison on the seeds where both runs are feasible.", "",
+           "| Customers | QPSO + LS better | Tie | QPSO + LS worse | Median paired Δ | Both feasible |",
+           "|---|---|---|---|---|---|"]
+    md += _paired_detail(bc_runs, "qpso_ls", "pso_ls", args.sizes)
+    md += ["", "What local search adds to each swarm, paired per seed on penalised fitness "
+           "(\"+ LS better\" = the LS arm beat the same swarm without it). A swarm that starts "
+           "worse has more to gain, so a larger gain here is not by itself evidence of a better "
+           "fit between swarm and local search; the table above is the test.", "",
+           "| Customers | QPSO: + LS better | QPSO: median Δ | PSO: + LS better | PSO: median Δ |",
+           "|---|---|---|---|---|"]
+    for n in args.sizes:
+        cols = []
+        for a, b in (("qpso_ls", "qpso"), ("pso_ls", "standard_pso")):
+            pairs = _paired_diffs(bc_runs, a, b, n)
+            d = [x["fitness"] - y["fitness"] for x, y in pairs]
+            cols += [f"{sum(1 for v in d if v < -1e-9)}/{len(d)}", f"{statistics.median(d):+.1f}"]
+        md.append(f"| {n} | " + " | ".join(cols) + " |")
+    md += ["", "Median runtime (s):", "",
+           "| Customers | QPSO alone | QPSO + LS | PSO alone | PSO + LS |", "|---|---|---|---|---|"]
+    for n in args.sizes:
+        rt = [statistics.median(r["runtime_s"] for r in bc_runs if r["n"] == n and r["config"] == c)
+              for c in ("qpso", "qpso_ls", "standard_pso", "pso_ls")]
+        md.append(f"| {n} | " + " | ".join(f"{x:.1f}" for x in rt) + " |")
+    md += ["", "Figure: `ablation_ls_attribution.png`.", ""]
 
     with open("data/ablation_results.md", "w", encoding="utf-8") as f:
         f.write("\n".join(md))
