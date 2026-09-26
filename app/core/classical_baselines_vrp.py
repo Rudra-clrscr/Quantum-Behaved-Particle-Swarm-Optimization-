@@ -18,6 +18,10 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 from app.core.vrp_problem import VRPProblem, evaluate_chromosome, VRPSolution
+from app.core.local_search import (
+    LOCAL_SEARCH_INTERVAL, LOCAL_SEARCH_PASSES,
+    is_refinement_iteration, refine_best, reinject_into_worst,
+)
 
 
 @dataclass
@@ -153,7 +157,19 @@ def run_standard_pso_vrp(
     problem: VRPProblem, n_particles: int = 50, max_iter: int = 200,
     w: float = 0.7, c1: float = 1.5, c2: float = 1.5,
     seed: Optional[int] = None,
+    use_local_search: bool = False,
+    local_search_interval: int = LOCAL_SEARCH_INTERVAL,
+    local_search_passes: int = LOCAL_SEARCH_PASSES,
 ) -> VRPBenchmarkResult:
+    """
+    Standard PSO. With `use_local_search=True` it becomes "PSO + LS": the same
+    memetic step QPSO uses (local_search.py -- same interval, passes, acceptance,
+    reinjection and final polish), so the two differ only in the base swarm.
+
+    A reinjected particle keeps its velocity. Only position and personal best
+    are overwritten, exactly as in QPSO, which has no velocity to reset; zeroing
+    it here would add a mechanism QPSO + LS does not have.
+    """
     rng = np.random.default_rng(seed)
     d = len(problem.customers)
     upper = problem.n_vehicles
@@ -191,9 +207,27 @@ def run_standard_pso_vrp(
 
         convergence_curve.append(gbest_fit)
 
+        # Memetic step, identical to QPSO's (see local_search.py).
+        if use_local_search and gbest_sol is not None and            is_refinement_iteration(it, local_search_interval):
+            refined = refine_best(problem, gbest_sol, gbest_fit, local_search_passes)
+            if refined is not None:
+                gbest_sol, gbest = refined
+                gbest_fit = gbest_sol.fitness
+                reinject_into_worst(positions, pbest, pbest_fit, gbest, gbest_fit)
+                convergence_curve[-1] = gbest_fit
+
+    if use_local_search and gbest_sol is not None:
+        refined = refine_best(problem, gbest_sol, gbest_fit, local_search_passes + 1)
+        if refined is not None:
+            gbest_sol = refined[0]
+            gbest_fit = gbest_sol.fitness
+            if convergence_curve:
+                convergence_curve[-1] = gbest_fit
+
     runtime = time.perf_counter() - t0
     return VRPBenchmarkResult(
-        algorithm="Standard PSO", best_solution=gbest_sol, best_fitness=gbest_fit,
+        algorithm="Standard PSO + local search" if use_local_search else "Standard PSO",
+        best_solution=gbest_sol, best_fitness=gbest_fit,
         runtime_sec=runtime, n_evaluations=n_eval, convergence_curve=convergence_curve,
     )
 

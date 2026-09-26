@@ -17,7 +17,9 @@ population-based metaheuristics and true optimality on larger VRP instances.
 
 from __future__ import annotations
 import copy
-from typing import List
+from typing import List, Optional, Tuple
+
+import numpy as np
 
 from app.core.vrp_problem import VRPProblem, evaluate_solution, VRPSolution
 
@@ -119,7 +121,6 @@ def routes_to_chromosome(problem: VRPProblem, routes: List[List[int]]):
     """Re-encode a routes structure back into a random-key chromosome, so a
     locally-refined solution can be reinjected into a continuous-encoding
     metaheuristic's population (Lamarckian learning)."""
-    import numpy as np
     node_to_customer_idx = {c.node_id: i for i, c in enumerate(problem.customers)}
     chromosome = np.zeros(len(problem.customers))
 
@@ -132,6 +133,53 @@ def routes_to_chromosome(problem: VRPProblem, routes: List[List[int]]):
             chromosome[c_idx] = v_idx + frac
 
     return chromosome
+
+
+# ---------------------------------------------------------------------------
+# The memetic step, shared by every swarm optimiser
+# ---------------------------------------------------------------------------
+# QPSO and standard PSO both call these, so "QPSO + LS" and "PSO + LS" differ
+# only in the base metaheuristic: same interval, same pass count, same
+# strict-improvement acceptance, same Lamarckian reinjection, same final polish.
+# A copy of this logic in each optimiser could drift, and the ablation that
+# compares them would then be measuring the drift.
+
+LOCAL_SEARCH_INTERVAL = 15
+LOCAL_SEARCH_PASSES = 2
+
+
+def is_refinement_iteration(it: int, interval: int) -> bool:
+    """Refine on every `interval`-th iteration, never on the first."""
+    return it > 0 and it % interval == 0
+
+
+def refine_best(problem: VRPProblem, best_sol: VRPSolution, best_fit: float,
+                passes: int) -> Optional[Tuple[VRPSolution, "np.ndarray"]]:
+    """
+    Run local search from the swarm's best solution.
+
+    Returns (refined solution, its chromosome) only if it is strictly better than
+    `best_fit`; otherwise None and the swarm is left untouched.
+    """
+    refined_routes = local_search_refine(problem, best_sol.routes, max_passes=passes)
+    refined = evaluate_solution(problem, refined_routes)
+    if refined.fitness < best_fit:
+        chromosome = np.clip(routes_to_chromosome(problem, refined_routes),
+                             0.0, problem.n_vehicles - 1e-9)
+        return refined, chromosome
+    return None
+
+
+def reinject_into_worst(positions, pbest, pbest_fit, chromosome, fitness) -> int:
+    """
+    Lamarckian reinjection: overwrite the particle with the worst personal best
+    with the refined solution, so the swarm builds on it. Returns its index.
+    """
+    worst = int(np.argmax(pbest_fit))
+    positions[worst] = chromosome.copy()
+    pbest[worst] = chromosome.copy()
+    pbest_fit[worst] = fitness
+    return worst
 
 
 if __name__ == "__main__":
