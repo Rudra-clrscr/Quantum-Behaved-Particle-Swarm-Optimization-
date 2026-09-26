@@ -54,7 +54,7 @@ def run_full_vrp_benchmark(problem: VRPProblem, max_iter: int = 200, seed: int =
     qpso = QPSOVRPOptimizer(problem, n_particles=50, max_iter=max_iter, seed=seed)
     qres = qpso.optimize()
     results["QPSO"] = {
-        "algorithm": "QPSO (Quantum-Inspired PSO)",
+        "algorithm": "QPSO (Quantum-Behaved PSO)",
         "best_solution": qres.best_solution,
         "best_fitness": qres.best_fitness,
         "runtime_sec": time.perf_counter() - t0,
@@ -221,74 +221,6 @@ def run_robustness_check(problem: VRPProblem, n_seeds: int = 5, max_iter: int = 
     return summary
 
 
-def run_dynamic_traffic_benchmark(vrp: VRPProblem, incident_factors: List[float] = [2.0, 3.5, 5.0]) -> Dict[float, Any]:
-    """Benchmark Static vs Dynamic QPSO re-optimization across varying traffic incident severities."""
-    from app.core.dynamic_vrp import simulate_dynamic_reroute
-
-    print(f"\n{'Incident Severity':<18} {'Static Time':>12} {'Dynamic Time':>13} {'Time Saved':>12} {'Delay Avoided %':>17}")
-    print("-" * 75)
-
-    dyn_results = {}
-    for factor in incident_factors:
-        res = simulate_dynamic_reroute(
-            problem=vrp, incident_factor=factor, trigger_time_min=60.0,
-            algorithm="qpso", n_particles=50, max_iter=150, seed=1
-        )
-        dyn_results[factor] = res
-        print(f"{factor:.1f}x Congestion {res.static_solution.total_time:>12.1f}m {res.dynamic_solution.total_time:>13.1f}m "
-              f"{res.time_saved_min:>10.1f}m ({res.time_saved_pct:.1f}%) {res.delay_avoided_pct:>16.1f}%")
-
-    return dyn_results
-
-
-if __name__ == "__main__":
-    import os
-    os.makedirs("data", exist_ok=True)
-
-    print("=" * 95)
-    print("VRP BENCHMARK: Single instance, all algorithms")
-    print("=" * 95)
-    net = generate_synthetic_city_graph(n_nodes=40, seed=7)
-    vrp = generate_synthetic_vrp(net, n_customers=18, depot=0, vehicle_capacity=80, seed=3)
-    results = run_full_vrp_benchmark(vrp, max_iter=200, seed=1)
-    print_vrp_comparison_table(results)
-    plot_vrp_convergence(results, save_path="data/vrp_convergence.png")
-
-    print("\n" + "=" * 95)
-    print("DYNAMIC TRAFFIC BENCHMARK (Static vs Dynamic QPSO Rerouting)")
-    print("=" * 95)
-    run_dynamic_traffic_benchmark(vrp, incident_factors=[2.0, 3.5, 5.0])
-
-    print("\n" + "=" * 95)
-    print("ROBUSTNESS CHECK (5 seeds per algorithm)")
-    print("=" * 95)
-    run_robustness_check(vrp, n_seeds=5, max_iter=150)
-
-    print("\n" + "=" * 95)
-    print("VRP SCALABILITY TEST (fixed budget -- for comparison)")
-    print("=" * 95)
-    scal_fixed = run_vrp_scalability_test(customer_counts=[10, 20, 40, 60], seed=1, scale_budget=False)
-    plot_vrp_scalability(scal_fixed, save_path="data/vrp_scalability_fixed_budget.png")
-
-    print("\n" + "=" * 95)
-    print("VRP SCALABILITY TEST (scaled budget -- fair per-dimension search effort)")
-    print("=" * 95)
-    scal_scaled = run_vrp_scalability_test(customer_counts=[10, 20, 40, 60], seed=1, scale_budget=True)
-    plot_vrp_scalability(scal_scaled, save_path="data/vrp_scalability_scaled_budget.png")
-
-def run_real_city_demo_benchmark(place: str = "New Delhi, India", max_nodes: int = 1000):
-    from app.core.osm_network import load_osm_network
-    print("\n" + "=" * 95)
-    print(f"REAL CITY DEMO BENCHMARK: {place}")
-    print("=" * 95)
-    try:
-        net = load_osm_network(place=place, max_nodes=max_nodes)
-        vrp = generate_synthetic_vrp(net, n_customers=16, depot=0, vehicle_capacity=80, seed=42)
-        results = run_full_vrp_benchmark(vrp, max_iter=150, seed=1)
-        print_vrp_comparison_table(results)
-    except Exception as e:
-        print(f"Could not run real city benchmark: {e}")
-
 import multiprocessing
 import traceback
 
@@ -329,20 +261,22 @@ def _worker_solve(problem, algorithm, seed, out_q):
 def run_stress_test_at_scale(
     n_customers_list: list[int] = [100, 200],
     algorithms: list[str] = ["qpso_local_search", "standard_pso"],
-    network_source: str = "real_city",
+    network_source: str = "synthetic",
     network_id: str | None = None,
     time_budget_seconds: float = 300.0,
     n_seeds: int = 3,
 ) -> dict:
-    import json
-    from app.core.osm_network import load_osm_network
-    
-    if network_source == "real_city":
-        net = load_osm_network(place="New Delhi, India", max_nodes=500)
-        actual_network_id = network_id or "real_city_delhi"
-    else:
-        net = generate_synthetic_city_graph(n_nodes=300, seed=1)
-        actual_network_id = "synthetic"
+    # Only the synthetic graph is available here: the OpenStreetMap loader that
+    # produced data/stress_test_delhi.json lives in the upstream application,
+    # not in this research artifact.
+    if network_source != "synthetic":
+        raise ValueError(
+            f"network_source={network_source!r} is not available in this repository; "
+            "only 'synthetic' is. The Delhi measurements in "
+            "data/stress_test_delhi.json came from the upstream application's OSM loader."
+        )
+    net = generate_synthetic_city_graph(n_nodes=300, seed=1)
+    actual_network_id = network_id or "synthetic"
         
     results = {}
     
@@ -392,6 +326,33 @@ def run_stress_test_at_scale(
         "results": results
     }
 
+
 if __name__ == "__main__":
-    # Also run the real city benchmark at the end
-    run_real_city_demo_benchmark()
+    import os
+    os.makedirs("data", exist_ok=True)
+
+    print("=" * 95)
+    print("VRP BENCHMARK: Single instance, all algorithms")
+    print("=" * 95)
+    net = generate_synthetic_city_graph(n_nodes=40, seed=7)
+    vrp = generate_synthetic_vrp(net, n_customers=18, depot=0, vehicle_capacity=80, seed=3)
+    results = run_full_vrp_benchmark(vrp, max_iter=200, seed=1)
+    print_vrp_comparison_table(results)
+    plot_vrp_convergence(results, save_path="data/vrp_convergence.png")
+
+    print("\n" + "=" * 95)
+    print("ROBUSTNESS CHECK (5 seeds per algorithm)")
+    print("=" * 95)
+    run_robustness_check(vrp, n_seeds=5, max_iter=150)
+
+    print("\n" + "=" * 95)
+    print("VRP SCALABILITY TEST (fixed budget -- for comparison)")
+    print("=" * 95)
+    scal_fixed = run_vrp_scalability_test(customer_counts=[10, 20, 40, 60], seed=1, scale_budget=False)
+    plot_vrp_scalability(scal_fixed, save_path="data/vrp_scalability_fixed_budget.png")
+
+    print("\n" + "=" * 95)
+    print("VRP SCALABILITY TEST (scaled budget -- fair per-dimension search effort)")
+    print("=" * 95)
+    scal_scaled = run_vrp_scalability_test(customer_counts=[10, 20, 40, 60], seed=1, scale_budget=True)
+    plot_vrp_scalability(scal_scaled, save_path="data/vrp_scalability_scaled_budget.png")

@@ -1,6 +1,6 @@
 # Mathematical Formulation — Capacitated Vehicle Routing Problem with Time Windows (CVRPTW)
 
-This document provides the formal mathematical model, constraint equations, decision variable definitions, and quantum-inspired metaheuristic formulation for the SIH26137 Quantum-Inspired Intelligent Traffic Route Optimization platform.
+This document provides the formal mathematical model, constraint equations, decision variable definitions, and quantum-behaved particle swarm optimization (QPSO) formulation for the congestion-aware CVRPTW solver in this repository.
 
 ---
 
@@ -16,15 +16,16 @@ where:
 Each road edge $(u, v) \in E$ has:
 - Physical road distance: $D(u, v) \ge 0$ (kilometers)
 - Base free-flow travel time: $T_0(u, v) \ge 0$ (minutes)
-- Congestion friction factor: $C(u, v) \ge 1.0$, updated dynamically based on real-time traffic incidents or time-of-day rush hour profiles.
+- Congestion friction factor: $C(u, v) \ge 1.0$, a static per-edge value. Scripted incidents can raise it on individual edges for a set period. No live traffic data is used.
 
 The effective travel time along edge $(u, v)$ is:
 $$T(u, v) = T_0(u, v) \cdot C(u, v)$$
 
-For time-dependent routing with time buckets $b \in \{0, 1, \dots, B-1\}$ (e.g. 30-minute intervals over operating horizon $H$):
-$$T(u, v, t) = T_0(u, v) \cdot C(u, v, \text{bucket}(t))$$
+For the optional time-dependent extension, time is split into fixed buckets $b \in \{0, 1, \dots, B-1\}$ (30-minute intervals over operating horizon $H$). Each edge's factor is scaled by a fixed time-of-day multiplier $\mu(\cdot) \ge 1$, which is evaluated at the bucket midpoint $\tau_b$:
+$$T(u, v, t) = T_0(u, v) \cdot C(u, v) \cdot \mu(\tau_{\text{bucket}(t)})$$
+Here $\mu$ is a twin-peak commuter curve (a sum of two Gaussians for the morning and evening peaks). Its amplitudes are a generic urban calibration, not measured traffic counts.
 
-The all-pairs shortest path distance matrix $d_{ij}$ and travel time matrix $t_{ij}$ between any two problem locations $i, j \in V$ are computed via Dijkstra's algorithm over graph $G$.
+For any two problem locations $i, j \in V$, Dijkstra's algorithm over $G$ gives the minimum travel time $t_{ij}$. The distance $d_{ij}$ is the length of that minimum-time path, which need not be the shortest path by distance.
 
 ---
 
@@ -35,7 +36,11 @@ The all-pairs shortest path distance matrix $d_{ij}$ and travel time matrix $t_{
   - $e_i \ge 0$ is the earliest arrival time (ready time). If a vehicle arrives at $t < e_i$, it waits until $e_i$.
   - $l_i \ge e_i$ is the latest acceptable service start time (due time / SLA deadline).
 - **Service duration**: Customer $i$ requires service duration $s_i \ge 0$ minutes. For depot, $s_0 = 0$.
-- **Vehicle fleet**: A homogeneous fleet of $K$ vehicles, each having maximum capacity $Q$ (or heterogeneous per-vehicle capacities $Q_k$ for mid-route re-planning).
+- **Vehicle fleet**: up to $K$ vehicles, each with capacity $Q$. $K$ is a ceiling, not a quota: a vehicle may be left unused (but see $\rho$ below).
+- **Mixed fleet (optional)**: two per-vehicle factors, both defaulting to $1.0$. With the defaults, the fleet is uniform and the objective reduces to the plain case:
+  - $\sigma_k > 0$ is the **speed factor**. It multiplies vehicle $k$'s travel time on every leg, so values below $1.0$ mean faster than the network's base speed. It scales congested travel time rather than replacing it.
+  - $\kappa_k > 0$ is the **relative cost per kilometre**, weighting the distance driven by vehicle $k$. Only the ratio between vehicles matters.
+- **Fleet utilisation mode**: a flag $\rho \in \{0, 1\}$ (`require_all_vehicles`, default $0$). When $\rho = 1$, all $K$ vehicles must be dispatched; see the idle-vehicle penalty in §4.3.
 - **Depot operating window**: The depot operates within $[e_0, l_0]$, where $l_0$ represents the planning horizon $H$.
 
 ---
@@ -43,7 +48,7 @@ The all-pairs shortest path distance matrix $d_{ij}$ and travel time matrix $t_{
 ## 3. Decision Variables & Chromosome Encoding
 
 ### Classical Binary Decision Variables
-For mathematical completeness, the discrete multi-commodity flow formulation defines:
+For completeness, the standard three-index vehicle-flow formulation defines:
 $$x_{ijk} = \begin{cases} 1 & \text{if vehicle } k \text{ traverses arc } (i, j) \\ 0 & \text{otherwise} \end{cases} \quad \forall i, j \in V, k \in \{1, \dots, K\}$$
 $$y_{ik} = \begin{cases} 1 & \text{if customer } i \text{ is served by vehicle } k \\ 0 & \text{otherwise} \end{cases} \quad \forall i \in C, k \in \{1, \dots, K\}$$
 $$t_{ik} \ge 0 \quad \text{arrival time of vehicle } k \text{ at node } i$$
@@ -62,35 +67,78 @@ $$R_k = (0, c_{k,1}, c_{k,2}, \dots, c_{k, m_k}, 0)$$
 
 ## 4. Objective Function & Penalty Formulation
 
-The primary objective is to minimize total fleet travel time and congestion delays, while satisfying vehicle capacity and time window constraints.
+This section states the function that is actually minimised. Every solver in this repository reaches the objective through the single implementation `evaluate_solution` in [`app/core/vrp_problem.py`](../app/core/vrp_problem.py): QPSO, GA, SA, standard PSO, the greedy baseline and the exact solver. They therefore all optimise the same model. [`tests/test_formulation_matches_code.py`](../tests/test_formulation_matches_code.py) implements the equations below independently and checks that they reproduce the code's fitness exactly.
 
-To enable the metaheuristic swarm to traverse constraint boundaries smoothly and converge reliably toward the feasible global optimum, constraints are handled via soft penalties:
+### 4.1 Route clock
 
-$$\min \mathcal{F}(X) = T_{\text{total}}(X) + \lambda_{\text{cap}} \cdot \mathcal{P}_{\text{cap}}(X) + \lambda_{\text{time}} \cdot \mathcal{P}_{\text{time}}(X)$$
+A route for vehicle $k$ is the ordered customer sequence $R_k = (c_{k,1}, \dots, c_{k,m_k})$, driven as $0 \to c_{k,1} \to \dots \to c_{k,m_k} \to 0$. The vehicle leaves the depot at $\tau_{k,0} = 0$. Writing $c_{k,0} = 0$ for the depot, for each $j \in \{1, \dots, m_k\}$:
 
-where:
-1. **Total Travel Time**:
-   $$T_{\text{total}}(X) = \sum_{k=1}^K \left[ t_{0, c_{k,1}} + \sum_{j=1}^{m_k - 1} t_{c_{k,j}, c_{k,j+1}} + t_{c_{k,m_k}, 0} \right]$$
+$$\theta_{k,j} = \sigma_k \cdot t\big(c_{k,j-1},\, c_{k,j},\, \tau_{k,j-1}\big) \qquad \text{(travel time, priced at the moment of departure)}$$
 
-2. **Capacity Violation Penalty**:
-   $$\mathcal{P}_{\text{cap}}(X) = \sum_{k=1}^K \max\left(0, \; \sum_{j=1}^{m_k} q_{c_{k,j}} - Q_k\right)$$
-   Weighted by penalty multiplier $\lambda_{\text{cap}} = 50.0$.
+$$a_{k,j} = \tau_{k,j-1} + \theta_{k,j} \qquad \text{(arrival)}$$
 
-3. **Time-Window Lateness Penalty**:
-   For each vehicle $k$, departure from depot starts at $t_0 = 0$. For customer $j$ on route $k$:
-   $$a_j = t_{\text{prev}} + t_{\text{prev}, j} \quad \text{(arrival time)}$$
-   $$\text{start}_j = \max(a_j, e_j) \quad \text{(service start after potential wait)}$$
-   $$t_j = \text{start}_j + s_j \quad \text{(departure time after service)}$$
-   $$\text{Lateness}_j = \max(0, \; a_j - l_j)$$
+$$w_{k,j} = \max\big(0,\; e_{c_{k,j}} - a_{k,j}\big) \qquad \text{(wait, if early)}$$
 
-   $$\mathcal{P}_{\text{time}}(X) = \sum_{j \in C} \text{Lateness}_j$$
-   Weighted by penalty multiplier $\lambda_{\text{time}} = 10.0$.
+$$\beta_{k,j} = \max\big(a_{k,j},\; e_{c_{k,j}}\big) = a_{k,j} + w_{k,j} \qquad \text{(service start)}$$
 
-A solution is strictly **feasible** if and only if $\mathcal{P}_{\text{cap}}(X) = 0$ and $\mathcal{P}_{\text{time}}(X) = 0$.
+$$\tau_{k,j} = \beta_{k,j} + s_{c_{k,j}} \qquad \text{(departure, after service)}$$
+
+The return leg is $\theta_{k,m_k+1} = \sigma_k \cdot t(c_{k,m_k}, 0, \tau_{k,m_k})$, with no wait and no service at the depot.
+
+The travel time $t(\cdot,\cdot,\tau)$ is evaluated **at the departure time**. With time-dependence enabled, the lookup uses the travel-time matrix for bucket $b(\tau) = \min\big(\lfloor \tau / \Delta \rfloor,\, B-1\big)$, where $\Delta = 30$ minutes. The whole leg is priced at that bucket, even if the drive crosses into the next one. With time-dependence disabled (the default, and the setting for every result except the time-dependent demonstration), this reduces to the single static matrix $t_{ij}$.
+
+### 4.2 Accumulated quantities
+
+$$T_{\text{total}} = \sum_{k=1}^{K} \left[ \sum_{j=1}^{m_k} \big(\theta_{k,j} + w_{k,j}\big) \;+\; \theta_{k,m_k+1} \right]$$
+
+$$D_{\text{total}} = \sum_{k=1}^{K} \kappa_k \left[ \sum_{j=1}^{m_k} d\big(c_{k,j-1}, c_{k,j}\big) \;+\; d\big(c_{k,m_k}, 0\big) \right]$$
+
+- $T_{\text{total}}$ **includes waiting time**, not just driving. A vehicle that arrives early and waits for the window to open is charged for the wait. Service time is not included.
+- $D_{\text{total}}$ is a **weighted** distance. For a uniform fleet ($\kappa_k = 1$) it is distance in kilometres. For a mixed fleet it is a relative cost.
+
+### 4.3 Penalties
+
+Constraints are handled as soft penalties, so the swarm can pass through infeasible regions of the search space instead of being blocked by them.
+
+**Capacity**, per vehicle:
+
+$$\mathcal{P}_{\text{cap}} = \sum_{k=1}^{K} \max\left(0,\; \sum_{j=1}^{m_k} q_{c_{k,j}} - Q \right)$$
+
+**Time window.** Lateness is measured from the **service start** $\beta_{k,j}$, not from arrival. A vehicle that arrives early and waits is still late if the window opens only after the deadline has passed:
+
+$$\mathcal{P}_{\text{time}} = \sum_{k=1}^{K} \sum_{j=1}^{m_k} \max\big(0,\; \beta_{k,j} - l_{c_{k,j}}\big) \;+\; 1000 \cdot \big|U\big|$$
+
+Here $U$ is the set of legs whose travel time is infinite (the node is unreachable). Each such leg adds a flat $1000$, contributes no time or distance, and does not advance the vehicle's clock.
+
+**Idle vehicle**, only when every vehicle must be dispatched ($\rho = 1$):
+
+$$\mathcal{P}_{\text{idle}} = \rho \cdot \big|\{\, k : R_k = \varnothing \,\}\big|$$
+
+### 4.4 Fitness
+
+$$\boxed{\;\min \; \mathcal{F} \;=\; w_T \cdot T_{\text{total}} \;+\; w_D \cdot D_{\text{total}} \;+\; \lambda_{\text{cap}} \cdot \mathcal{P}_{\text{cap}} \;+\; \lambda_{\text{time}} \cdot \mathcal{P}_{\text{time}} \;+\; \lambda_{\text{idle}} \cdot \mathcal{P}_{\text{idle}}\;}$$
+
+| symbol | meaning | default |
+|---|---|---|
+| $w_T$ | weight on fleet time | $0.6$ |
+| $w_D$ | weight on distance driven | $0.4$ |
+| $\lambda_{\text{cap}}$ | capacity violation multiplier | $50.0$ |
+| $\lambda_{\text{time}}$ | lateness multiplier | $10.0$ |
+| $\lambda_{\text{idle}}$ | idle-vehicle multiplier | $200.0$ |
+
+The objective is a **weighted sum of two objectives**, fleet time and distance driven, not travel time alone. The weights belong to the problem instance, not to a solver. On the synthetic instances they are $w_T = 0.6$, $w_D = 0.4$. Solomon's CVRPTW benchmark is scored on total distance, so instances loaded from it set $w_T = 0$, $w_D = 1$, and the optimiser minimises the same quantity the benchmark reports.
+
+A solution is reported **feasible** when both hard-constraint penalties are zero to numerical tolerance:
+
+$$\mathcal{P}_{\text{cap}} < 10^{-6} \quad \text{and} \quad \mathcal{P}_{\text{time}} < 10^{-6}$$
+
+$\mathcal{P}_{\text{idle}}$ does not affect feasibility: leaving a vehicle unused is a preference, not a constraint violation.
 
 ---
 
 ## 5. Exact Constraints (Reference MIP Formulation)
+
+This MIP is given for reference only; no code in this repository solves it. The exact baseline in [`app/core/exact_vrp.py`](../app/core/exact_vrp.py) instead minimises the penalised objective $\mathcal{F}$ of §4 exactly: it enumerates every ordering of every customer subset, then assigns the subsets to vehicles by dynamic programming over subsets. "Optimum" in the results therefore means the minimum of $\mathcal{F}$, which coincides with the MIP optimum when the minimum of $\mathcal{F}$ is feasible.
 
 1. **Routing and Single Visit**:
    $$\sum_{k=1}^K \sum_{j \in V, j \neq i} x_{ijk} = 1 \quad \forall i \in C$$
@@ -99,7 +147,7 @@ A solution is strictly **feasible** if and only if $\mathcal{P}_{\text{cap}}(X) 
 3. **Depot Departure and Return**:
    $$\sum_{j \in C} x_{0jk} \le 1, \quad \sum_{i \in C} x_{i0k} \le 1 \quad \forall k \in \{1, \dots, K\}$$
 4. **Capacity Limits**:
-   $$\sum_{i \in C} q_i \sum_{j \in V, j \neq i} x_{ijk} \le Q_k \quad \forall k \in \{1, \dots, K\}$$
+   $$\sum_{i \in C} q_i \sum_{j \in V, j \neq i} x_{ijk} \le Q \quad \forall k \in \{1, \dots, K\}$$
 5. **Time Window Precedence**:
    $$t_{ik} + s_i + t_{ij} - M(1 - x_{ijk}) \le t_{jk} \quad \forall i \in V, j \in C, i \neq j, \forall k$$
    $$e_i \le t_{ik} \le l_i \quad \forall i \in C, \forall k$$
@@ -128,50 +176,44 @@ For particle $m \in \{1, \dots, M\}$ on dimension $j \in \{1, \dots, N\}$ at ite
 
 2. **Local Attractor ($P$)**:
    A stochastic combination of personal best $pbest_m$ and global swarm best $gbest$:
-   $$P_{m,j}(t) = \phi_j(t) \cdot pbest_{m,j}(t) + (1 - \phi_j(t)) \cdot gbest_j(t), \quad \phi_j \sim U(0, 1)$$
+   $$P_{m,j}(t) = \phi_{m,j}(t) \cdot pbest_{m,j}(t) + (1 - \phi_{m,j}(t)) \cdot gbest_j(t), \quad \phi_{m,j} \sim U(0, 1)$$
 
 3. **Position Update**:
-   $$X_{m,j}(t+1) = P_{m,j}(t) \pm \alpha(t) \cdot |mbest_j(t) - X_{m,j}(t)| \cdot \ln\left(\frac{1}{u}\right), \quad u \sim U(0, 1)$$
-   The sign $\pm$ is selected with equal probability ($p = 0.5$).
+   $$X_{m,j}(t+1) = P_{m,j}(t) \pm \alpha(t) \cdot |mbest_j(t) - X_{m,j}(t)| \cdot \ln\left(\frac{1}{u}\right), \quad u \sim U(10^{-6}, 1)$$
+   The sign $\pm$ is chosen with equal probability ($p = 0.5$). $\phi$, $u$ and the sign are drawn independently for every particle and dimension. The new position is clipped to the chromosome range $[0, K)$.
 
 4. **Contraction-Expansion Coefficient ($\alpha$)**:
-   Linearly annealed across iterations to balance early global exploration with late local exploitation:
-   $$\alpha(t) = \alpha_{\max} - \frac{t}{T_{\max}} (\alpha_{\max} - \alpha_{\min})$$
-   Nominal values: $\alpha_{\max} = 1.0, \alpha_{\min} = 0.5$.
+   Decreases linearly over the iterations, from exploration early in the run to exploitation late in it:
+   $$\alpha(t) = \alpha_{\text{start}} - \frac{t}{T_{\max} - 1} (\alpha_{\text{start}} - \alpha_{\text{end}}), \quad t = 0, \dots, T_{\max} - 1$$
+   Values used: $\alpha_{\text{start}} = 1.2$, $\alpha_{\text{end}} = 0.35$.
 
 ### High-Dimensional Instability Fix (Jump-Cap)
-As the number of dimensions (customers $N$) increases, the stochastic jump factor $\ln(1/u)$ becomes unbounded as $u \to 0$. In high dimensions, an extreme jump on any single coordinate shatters an otherwise high-quality route structure.
+The excursion term $\ln(1/u)$ is unbounded as $u \to 0$. The chromosome has one gene per customer, so as $N$ grows, the chance that at least one gene draws a very large jump in a given iteration also grows. One such jump can reassign a customer and break an otherwise good route.
 
-To restore convergence stability at scale, the jump step is bounded:
-$$\text{jump} = \text{clip}\left(\ln\left(\frac{1}{u}\right), \; 0, \; \text{jump\_cap}\right)$$
-$$\text{jump\_cap} = \frac{\gamma \cdot \text{scale}}{\sqrt{N}}$$
-where $\gamma$ is a scaling factor and $\text{scale} = K$. This ensures stable asymptotic convergence for large urban logistics networks ($N \ge 50$).
+The jump is therefore capped, with a cap that tightens as $N$ grows:
+$$\text{jump} = \min\left(\ln\left(\frac{1}{u}\right),\; c(N)\right), \qquad c(N) = \max\left(0.3,\; \frac{3}{1 + N/20}\right)$$
+The constants $3$, $20$ and the floor $0.3$ were tuned by experiment on the CVRPTW benchmark; they are not derived from theory. The cap makes the search more stable in practice (see the scalability results) but does not come with a convergence guarantee. [`tests/test_qpso_jump_cap.py`](../tests/test_qpso_jump_cap.py) checks that the bound is applied.
 
 ---
 
 ## 7. Memetic Hybridization (Lamarckian Local Search)
 
-While QPSO excels at global exploration through quantum tunneling, fine-grained routing permutations benefit from dedicated local neighborhood operators.
+QPSO's sampling explores globally. Local route improvements are better made by dedicated neighbourhood operators, so the global best is periodically refined by local search ([`app/core/local_search.py`](../app/core/local_search.py)).
 
-Periodically (every $L_{\text{interval}}$ iterations), the global best chromosome is decoded and refined via:
-1. **2-opt Intra-Route Operator**: Reverses path sub-segments $(i, \dots, j)$ within a single vehicle route to untangle crossing paths.
-2. **Or-opt Inter-Route Relocation Operator**: Evaluates moving blocks of 1, 2, or 3 consecutive customers from one vehicle route to another whenever travel time or constraint penalties decrease.
+Every $L = 15$ iterations (skipping iteration 0), the global best is decoded into routes and refined by alternating the two operators below. Refinement stops after 2 passes or at the first pass that brings no improvement. Both operators accept a move only if it lowers the full fitness $\mathcal{F}$ of §4, so penalties count, not just distance.
+1. **2-opt (intra-route)**: reverses a segment $(i, \dots, j)$ of one vehicle's route. The first improving reversal found is accepted.
+2. **Relocation (single-customer Or-opt, inter- and intra-route)**: tries moving each customer to every position in every route, including its own, and applies the best improving move for that customer. Only single customers are moved, not blocks of consecutive customers.
 
-The improved discrete solution is encoded back into continuous chromosome space and reinjected into $gbest$ (Lamarckian learning), closing the performance gap against classical heuristics across all fleet scales.
+If refinement improves on $gbest$, the refined routes are encoded back into a chromosome and replace $gbest$. They also replace the position and personal best of the particle with the worst personal best (Lamarckian learning), so the swarm continues from the improved solution. One final refinement of 3 passes is applied to the best solution after the last iteration.
+
+The benefit is measured, not assumed: on 40–60-customer instances, local search closes the gap between QPSO and standard PSO (see the README results). Instances of other sizes have not been evaluated to the same standard.
 
 ---
 
-## 8. Quantum-Inspired Execution vs. Physical Quantum Hardware Roadmap
+## 8. Discussion and Limitations: Classical Execution of a Quantum-Behaved Algorithm
 
-A critical design consideration for judges evaluating AICTE's Quantum Technology Vertical:
+We call the algorithm *quantum-behaved* PSO, following Sun et al.'s original QPSO terminology. The looser term *quantum-inspired* is a common synonym. Either way, no quantum computation takes place: the whole method runs on a classical CPU. The only quantum element is the sampling distribution. Each particle's next position is drawn from the probability density $Q(y) = |\psi(y)|^2$ of a particle in a 1D delta potential well (Section 6), using ordinary pseudo-random numbers. This heavy-tailed, attractor-centred distribution replaces PSO's velocity update. It is the source of the algorithm's exploration behaviour, and it also causes the dimension-dependent jump instability that the jump-cap corrects. Any gains reported here therefore come from a classical stochastic search operator and should be compared with other classical metaheuristics (GA, SA, standard PSO), not with quantum hardware. We make no claim of quantum speed-up.
 
-### Classical Simulation on Standard Hardware
-QuantaRoute implements a **quantum-inspired** metaheuristic (QPSO) running on classical CPUs, rather than execution on physical quantum processors (QPUs).
-- **Delta-Potential-Well Wave Function**: Particles simulate quantum tunneling through energy barriers using classical random variables sampled from the Schrödinger probability distribution $Q(y) = |\psi(y)|^2$.
-- **Immediate Production Viability**: Runs instantly on standard cloud infrastructure (Render, standard VMs, edge nodes) with zero cryogenic hardware requirements or NISQ (Noisy Intermediate-Scale Quantum) decoherence issues.
+The congestion model has two further limits. First, edge congestion factors are static or come from a fixed time-of-day curve; live traffic data is not ingested. Second, the fleet is homogeneous in capacity, and all experiments solve the problem once, from the depot, before departure.
 
-### Extensibility to Physical Quantum Hardware (Future Roadmap)
-While QPSO provides near-optimal routing on classical hardware today, the mathematical formulation is intentionally structured for transition to quantum hardware:
-1. **Gate-Based Quantum Processors (QAOA)**: The CVRPTW decision variables ($x_{ijk}$) and penalty formulations can be cast as an Ising Hamiltonian or QUBO (Quadratic Unconstrained Binary Optimization) problem solved via the Quantum Approximate Optimization Algorithm (QAOA) on IBM Quantum / Google Sycamore hardware.
-2. **Quantum Annealing**: The customer partitioning and vehicle assignment sub-problem maps directly onto quantum annealers (e.g. D-Wave Advantage) with minor graph embedding.
-3. **Hybrid Classical-Quantum Deployment**: Classical QPSO handles real-time dynamic rerouting under traffic incidents, while quantum hardware handles macro-level multi-depot fleet partitioning.
+**Future work.** The penalty formulation of Section 4 could be cast as a QUBO or Ising Hamiltonian and solved with QAOA or quantum annealing. Other extensions are driving the congestion factors from observed traffic data and supporting mid-route re-planning with per-vehicle residual capacities $Q_k$.

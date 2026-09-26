@@ -1,7 +1,7 @@
 """
 qpso_vrp.py
 ------------
-Quantum-inspired PSO (QPSO) applied to Capacitated VRP with Time Windows.
+Quantum-behaved PSO (QPSO) applied to Capacitated VRP with Time Windows.
 
 Same quantum-mechanical update rule as qpso.py (delta-potential-well model,
 attraction toward a stochastic combination of pbest/gbest, drawn toward the
@@ -60,7 +60,7 @@ class QPSOVRPOptimizer:
         # any given iteration grows quickly with dimensionality -- repeatedly
         # blowing up otherwise-good solutions right when the search should be
         # exploiting structure. Capping ln(1/u) at max_jump_factor keeps QPSO's
-        # quantum-inspired stochastic jumps bounded, restoring stable convergence
+        # quantum-behaved stochastic jumps bounded, restoring stable convergence
         # at higher dimensions without changing the algorithm's core mechanism.
         # If not explicitly set, scale the cap DOWN as dimensionality grows: more
         # customers -> more genes that can independently draw a large jump ->

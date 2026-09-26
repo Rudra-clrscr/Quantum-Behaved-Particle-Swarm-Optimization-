@@ -86,7 +86,7 @@ def _qpso(problem: VRPProblem, max_iter: int, seed: int) -> VRPBenchmarkResult:
     t0 = time.perf_counter()
     res = QPSOVRPOptimizer(problem, n_particles=50, max_iter=max_iter, seed=seed).optimize()
     return VRPBenchmarkResult(
-        algorithm="QPSO (Quantum-Inspired PSO)",
+        algorithm="QPSO (Quantum-Behaved PSO)",
         best_solution=res.best_solution,
         best_fitness=res.best_fitness,
         runtime_sec=time.perf_counter() - t0,

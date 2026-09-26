@@ -10,7 +10,7 @@ Why this instead of plain shortest-path:
     shortest-path is solved trivially (and exactly) by Dijkstra, so it can't
     demonstrate any advantage for a metaheuristic. CVRPTW, with multiple
     vehicles, capacity limits, and time windows, is genuinely NP-hard and is
-    where quantum-inspired metaheuristics are meant to show their value.
+    where quantum-behaved metaheuristics are meant to show their value.
 
 Encoding (random-key style, shared by QPSO / GA / SA / standard PSO so
 comparisons stay fair):
@@ -56,10 +56,11 @@ class VRPProblem:
     vehicle_capacity: float
     n_vehicles: int
 
-    # Optional per-vehicle capacities, indexed by vehicle. Used for mid-route
-    # re-planning, where each vehicle has already consumed part of its load and
-    # so has less room left than a fresh vehicle. None (the default) means every
-    # vehicle has the uniform `vehicle_capacity`.
+    # Optional per-vehicle capacities, indexed by vehicle -- a hook for
+    # re-planning a fleet that has already delivered part of its load. No
+    # experiment or test in this repository sets it, and docs/FORMULATION.md
+    # models a uniform capacity Q. None (the default) means every vehicle has
+    # the uniform `vehicle_capacity`.
     vehicle_capacities: Optional[List[float]] = None
 
     # A mixed fleet. An Indian municipal round is rarely one kind of vehicle: a
@@ -260,9 +261,9 @@ class VRPProblem:
 
     @staticmethod
     def _per_vehicle(values: Optional[List[float]], index: int, default: float) -> float:
-        # Out of range falls back rather than raising: the fleet can be resized
-        # mid-replan (see dynamic_vrp), and a van with no entry should cost the
-        # ordinary amount rather than stop the solve.
+        # Out of range falls back rather than raising: a list shorter than the
+        # fleet means the vehicles without an entry cost the ordinary amount,
+        # rather than stopping the solve.
         if values is None:
             return default
         if 0 <= index < len(values):
@@ -420,8 +421,7 @@ def evaluate_solution(
         if not route:
             continue
 
-        # capacity check (per-vehicle, so partially-loaded vehicles mid-route
-        # are held to the capacity they actually have left)
+        # capacity check, per vehicle (uniform Q unless vehicle_capacities is set)
         route_capacity = problem.capacity_for(v_idx)
         route_demand = sum(customer_lookup[n].demand for n in route)
         if route_demand > route_capacity:
