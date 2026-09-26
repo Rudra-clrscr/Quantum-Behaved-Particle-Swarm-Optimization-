@@ -21,14 +21,16 @@ Two modifications on top of standard QPSO for CVRPTW:
 1. **Jump-cap fix** — QPSO's stochastic position update can produce
    dimension-dependent jump instability as problem size grows. A cap on the
    jump that tightens with dimension mitigates it
-   ([`app/core/qpso_vrp.py`](app/core/qpso_vrp.py)); the effect is measurable
-   at 60 customers and absent at 20.
+   ([`app/core/qpso_vrp.py`](app/core/qpso_vrp.py)). Without local search the
+   effect is large from 60 customers up and absent at 20; with local search on,
+   it has no measurable effect.
 2. **Memetic hybridization** — QPSO's global search is paired with 2-opt and
    single-customer relocation ([`app/core/local_search.py`](app/core/local_search.py)).
-   On its own QPSO trails standard PSO at 40–60 customers; with local search it
-   leads, at a runtime cost. The same local search added to standard PSO does
-   as well, so the gain comes from local search rather than from QPSO
-   ([`docs/RESULTS.md`](docs/RESULTS.md) §4).
+   On its own QPSO trails standard PSO from 40 customers up; with local search
+   it leads, at a runtime cost. The same local search added to standard PSO
+   does as well, so the gain comes from local search rather than from QPSO.
+   Once local search starts, the swarm almost never improves the best solution
+   again ([`docs/RESULTS.md`](docs/RESULTS.md) §3–4).
 
 Plus an optional **time-dependent, congestion-aware** extension
 ([`app/core/traffic_profile.py`](app/core/traffic_profile.py)) that prices
@@ -60,6 +62,7 @@ scripts/
   impact_report.py           # Reproduces data/impact_report.md
   measure_exact_vrp.py       # Exact-solver runtime by instance size
   run_ablations.py           # Reproduces data/ablation_results.md (exact gap, jump-cap, local search, QPSO vs PSO + LS)
+  measure_swarm_contribution.py  # Reproduces data/swarm_contribution.md (swarm vs local-search share)
   generate_stress_test_cache.py # Measures scalability -> data/stress_test_synthetic.json
   plot_benchmark_charts.py   # Repeated-trial and scalability figures + data/benchmark_charts.md
 
@@ -67,6 +70,7 @@ data/
   solomon_results.md         # Solomon CVRPTW benchmark results (this repo's headline numbers)
   impact_report.md           # Distance/time savings converted to fuel and CO2
   ablation_results.md/.json  # Exact-optimum gap, jump-cap and local-search ablations
+  swarm_contribution.md/.json # How much of each memetic run's improvement the swarm vs local search made
   benchmark_charts.md        # Table view of every figure below (repeated trials, scalability)
   stress_test_synthetic.json # Measured scalability, synthetic graph (reproducible offline)
   stress_test_delhi.json     # Measured scalability, New Delhi OSM extract (upstream app)
@@ -106,6 +110,7 @@ python scripts/run_solomon_benchmark.py --max-iter 200 --seed 1   # -> data/solo
 python scripts/impact_report.py                                    # -> data/impact_report.md
 python scripts/measure_exact_vrp.py                                 # exact-solver runtime by size
 python scripts/run_ablations.py                                     # -> data/ablation_results.md
+python scripts/measure_swarm_contribution.py                        # -> data/swarm_contribution.md
 python scripts/generate_stress_test_cache.py                        # -> data/stress_test_synthetic.json
 python scripts/plot_benchmark_charts.py                             # -> data/benchmark_charts.md + figures
 python -m app.core.benchmark_vrp                                    # convergence/scalability plots
@@ -134,6 +139,7 @@ checks that the equations in the document reproduce its output exactly.
 The full write-up, with the setup, every table and the limitations, is in
 [`docs/RESULTS.md`](docs/RESULTS.md). The raw tables are in
 [`data/ablation_results.md`](data/ablation_results.md),
+[`data/swarm_contribution.md`](data/swarm_contribution.md),
 [`data/benchmark_charts.md`](data/benchmark_charts.md),
 [`data/solomon_results.md`](data/solomon_results.md) and
 [`data/impact_report.md`](data/impact_report.md). Headline claims, each graded
@@ -142,10 +148,12 @@ by the strength of its evidence:
 | Claim | Evidence | Strength |
 |---|---|---|
 | QPSO + LS reaches the exact optimum on small instances | 47/60 runs at 6–9 customers; median gap ≤ 0.56% | Strong up to 8 customers; weaker at 9 |
-| Jump cap improves QPSO as dimension grows | Mean fitness halved at 60 customers, no effect at 20 | Moderate: 5 seeds, one instance per size |
-| QPSO + LS beats standard PSO, GA, SA at 20–60 customers | Lowest mean at every size; 14/15 paired wins over PSO | Strong at equal particles/iterations; unequal in time |
-| Local search improves swarm metaheuristics on CVRPTW | Improves both QPSO and standard PSO on 29/30 paired seeds at 20–60 customers | Strong |
-| The gain comes from QPSO specifically | With identical local search, PSO + LS matches QPSO + LS (5/11 wins on seeds where both are feasible; means within 6%) | Not supported |
+| Jump cap improves QPSO alone as dimension grows | 24–49% lower mean fitness at 60–100 customers, no effect at 20 | Moderate: 5 seeds, one instance per size |
+| Jump cap improves QPSO + LS | 8 better / 11 worse / 2 tied on seeds where both are feasible | Not supported: no measurable effect with local search on |
+| QPSO + LS beats standard PSO and GA at 20–100 customers | Lowest mean at every size; 24/25 paired wins over PSO | Strong at equal particles/iterations; unequal in time |
+| Local search improves swarm metaheuristics on CVRPTW | Improves QPSO on 24/25 and standard PSO on 25/25 paired seeds at 20–100 customers | Strong |
+| The gain comes from QPSO specifically | With identical local search, PSO + LS matches QPSO + LS (9 better / 10 worse / 1 tied on seeds where both are feasible) | Not supported |
+| The swarm keeps contributing once local search starts | Improved the best in 4 of 450 windows between local-search calls | Not supported: local search does the work |
 | Solomon benchmark | Feasible on 4/6; 12.5–34.7% above best-known distance | Moderate: one seed; objective is distance, not Solomon's hierarchy |
 | Scales to large instances | Times out at 100 customers (90 s) and 200 (300 s) | Not supported: runtime is the main limitation |
 | Time-dependent congestion-aware routing | 5.8% on one instance | Preliminary; see below |
