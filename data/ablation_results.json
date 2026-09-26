@@ -1,11 +1,13 @@
 {
-  "generated_at": "2026-09-26T14:54:42Z",
+  "generated_at": "2026-09-26T16:33:40Z",
   "settings": {
     "seeds": 5,
     "sizes": [
       20,
       40,
-      60
+      60,
+      80,
+      100
     ],
     "exact_sizes": [
       6,
@@ -25,7 +27,7 @@
       "seed": 0,
       "fitness": 141.06521000304485,
       "feasible": true,
-      "runtime_s": 0.015533500001765788
+      "runtime_s": 0.014469899993855506
     },
     {
       "config": "qpso_ls",
@@ -34,7 +36,7 @@
       "seed": 1,
       "fitness": 141.06521000304485,
       "feasible": true,
-      "runtime_s": 0.48561370000243187
+      "runtime_s": 0.4657738000387326
     },
     {
       "config": "qpso_ls",
@@ -43,7 +45,7 @@
       "seed": 2,
       "fitness": 141.06521000304485,
       "feasible": true,
-      "runtime_s": 0.507660900009796
+      "runtime_s": 0.4690452999784611
     },
     {
       "config": "qpso_ls",
@@ -52,7 +54,7 @@
       "seed": 3,
       "fitness": 141.06521000304485,
       "feasible": true,
-      "runtime_s": 0.46736130001954734
+      "runtime_s": 0.4470576000167057
     },
     {
       "config": "qpso_ls",
@@ -61,7 +63,7 @@
       "seed": 4,
       "fitness": 141.06521000304485,
       "feasible": true,
-      "runtime_s": 0.4895265999948606
+      "runtime_s": 0.465478099999018
     },
     {
       "config": "qpso_ls",
@@ -70,7 +72,7 @@
       "seed": 5,
       "fitness": 141.06521000304485,
       "feasible": true,
-      "runtime_s": 0.5653714999789372
+      "runtime_s": 0.4551550000323914
     },
     {
       "config": "exact",
@@ -79,7 +81,7 @@
       "seed": 0,
       "fitness": 287.5309306181354,
       "feasible": false,
-      "runtime_s": 0.021473300002980977
+      "runtime_s": 0.014889400044921786
     },
     {
       "config": "qpso_ls",
@@ -88,7 +90,7 @@
       "seed": 1,
       "fitness": 287.5309306181354,
       "feasible": false,
-      "runtime_s": 0.5352975000278093
+      "runtime_s": 0.47074800002155825
     },
     {
       "config": "qpso_ls",
@@ -97,7 +99,7 @@
       "seed": 2,
       "fitness": 287.5309306181354,
       "feasible": false,
-      "runtime_s": 0.5302328999969177
+      "runtime_s": 0.4870600999565795
     },
     {
       "config": "qpso_ls",
@@ -106,7 +108,7 @@
       "seed": 3,
       "fitness": 287.5309306181354,
       "feasible": false,
-      "runtime_s": 0.5312235999736004
+      "runtime_s": 0.49858939996920526
     },
     {
       "config": "qpso_ls",
@@ -115,7 +117,7 @@
       "seed": 4,
       "fitness": 287.5309306181354,
       "feasible": false,
-      "runtime_s": 0.5504783999640495
+      "runtime_s": 0.49702190002426505
     },
     {
       "config": "qpso_ls",
@@ -124,7 +126,7 @@
       "seed": 5,
       "fitness": 287.5309306181354,
       "feasible": false,
-      "runtime_s": 0.5689635999733582
+      "runtime_s": 0.5069684000336565
     },
     {
       "config": "exact",
@@ -133,7 +135,7 @@
       "seed": 0,
       "fitness": 214.1427016391089,
       "feasible": false,
-      "runtime_s": 0.018833099980838597
+      "runtime_s": 0.01688710000598803
     },
     {
       "config": "qpso_ls",
@@ -142,7 +144,7 @@
       "seed": 1,
       "fitness": 214.1427016391089,
       "feasible": false,
-      "runtime_s": 0.5826382000232115
+      "runtime_s": 0.5035818999749608
     },
     {
       "config": "qpso_ls",
@@ -151,7 +153,7 @@
       "seed": 2,
       "fitness": 214.14270163910885,
       "feasible": false,
-      "runtime_s": 0.5919443999882787
+      "runtime_s": 0.4938454999937676
     },
     {
       "config": "qpso_ls",
@@ -160,7 +162,7 @@
       "seed": 3,
       "fitness": 214.1427016391089,
       "feasible": false,
-      "runtime_s": 0.4917418999830261
+      "runtime_s": 0.4697757000103593
     },
     {
       "config": "qpso_ls",
@@ -169,7 +171,7 @@
       "seed": 4,
       "fitness": 214.1427016391089,
       "feasible": false,
-      "runtime_s": 0.5012547000078484
+      "runtime_s": 0.4496410000137985
     },
     {
       "config": "qpso_ls",
@@ -178,7 +180,7 @@
       "seed": 5,
       "fitness": 214.1427016391089,
       "feasible": false,
-      "runtime_s": 0.4882571999914944
+      "runtime_s": 0.44787919998634607
     },
     {
       "config": "exact",
@@ -187,7 +189,7 @@
       "seed": 0,
       "fitness": 233.46705016924568,
       "feasible": true,
-      "runtime_s": 0.10742760001448914
+      "runtime_s": 0.1011659000068903
     },
     {
       "config": "qpso_ls",
@@ -196,7 +198,7 @@
       "seed": 1,
       "fitness": 233.46705016924562,
       "feasible": true,
-      "runtime_s": 0.5672913000453264
+      "runtime_s": 0.4966595000005327
     },
     {
       "config": "qpso_ls",
@@ -205,7 +207,7 @@
       "seed": 2,
       "fitness": 233.46705016924568,
       "feasible": true,
-      "runtime_s": 0.5592503999941982
+      "runtime_s": 0.504489500017371
     },
     {
       "config": "qpso_ls",
@@ -214,7 +216,7 @@
       "seed": 3,
       "fitness": 233.46705016924568,
       "feasible": true,
-      "runtime_s": 0.5747908999910578
+      "runtime_s": 0.5137188999797218
     },
     {
       "config": "qpso_ls",
@@ -223,7 +225,7 @@
       "seed": 4,
       "fitness": 233.46705016924562,
       "feasible": true,
-      "runtime_s": 0.6448118999833241
+      "runtime_s": 0.5138503999914974
     },
     {
       "config": "qpso_ls",
@@ -232,7 +234,7 @@
       "seed": 5,
       "fitness": 233.46705016924562,
       "feasible": true,
-      "runtime_s": 0.5880039000185207
+      "runtime_s": 0.5184142999933101
     },
     {
       "config": "exact",
@@ -241,7 +243,7 @@
       "seed": 0,
       "fitness": 194.06437903054797,
       "feasible": true,
-      "runtime_s": 0.10668740002438426
+      "runtime_s": 0.11373490002006292
     },
     {
       "config": "qpso_ls",
@@ -250,7 +252,7 @@
       "seed": 1,
       "fitness": 194.06437903054797,
       "feasible": true,
-      "runtime_s": 0.6227189000346698
+      "runtime_s": 0.5568533000187017
     },
     {
       "config": "qpso_ls",
@@ -259,7 +261,7 @@
       "seed": 2,
       "fitness": 194.06437903054797,
       "feasible": true,
-      "runtime_s": 0.6353955999948084
+      "runtime_s": 0.5298361000022851
     },
     {
       "config": "qpso_ls",
@@ -268,7 +270,7 @@
       "seed": 3,
       "fitness": 194.06437903054797,
       "feasible": true,
-      "runtime_s": 0.6104730000370182
+      "runtime_s": 0.5027728999848478
     },
     {
       "config": "qpso_ls",
@@ -277,7 +279,7 @@
       "seed": 4,
       "fitness": 194.06437903054797,
       "feasible": true,
-      "runtime_s": 0.5200450999545865
+      "runtime_s": 0.5196774000069126
     },
     {
       "config": "qpso_ls",
@@ -286,7 +288,7 @@
       "seed": 5,
       "fitness": 194.06437903054797,
       "feasible": true,
-      "runtime_s": 0.5394285999936983
+      "runtime_s": 0.5310575000476092
     },
     {
       "config": "exact",
@@ -295,7 +297,7 @@
       "seed": 0,
       "fitness": 265.15756384076195,
       "feasible": true,
-      "runtime_s": 0.10858310002367944
+      "runtime_s": 0.10332850000122562
     },
     {
       "config": "qpso_ls",
@@ -304,7 +306,7 @@
       "seed": 1,
       "fitness": 265.15756384076195,
       "feasible": true,
-      "runtime_s": 0.5564842000021599
+      "runtime_s": 0.49565159995108843
     },
     {
       "config": "qpso_ls",
@@ -313,7 +315,7 @@
       "seed": 2,
       "fitness": 265.15756384076195,
       "feasible": true,
-      "runtime_s": 0.5490541000035591
+      "runtime_s": 0.4905721999821253
     },
     {
       "config": "qpso_ls",
@@ -322,7 +324,7 @@
       "seed": 3,
       "fitness": 265.157563840762,
       "feasible": true,
-      "runtime_s": 0.5573820999707095
+      "runtime_s": 0.5051277999882586
     },
     {
       "config": "qpso_ls",
@@ -331,7 +333,7 @@
       "seed": 4,
       "fitness": 266.3965301612685,
       "feasible": true,
-      "runtime_s": 0.557310999953188
+      "runtime_s": 0.49827310000546277
     },
     {
       "config": "qpso_ls",
@@ -340,7 +342,7 @@
       "seed": 5,
       "fitness": 265.15756384076195,
       "feasible": true,
-      "runtime_s": 0.5577928000129759
+      "runtime_s": 0.4984905999735929
     },
     {
       "config": "exact",
@@ -349,7 +351,7 @@
       "seed": 0,
       "fitness": 264.0503067573481,
       "feasible": true,
-      "runtime_s": 0.992510800017044
+      "runtime_s": 0.8751066999975592
     },
     {
       "config": "qpso_ls",
@@ -358,7 +360,7 @@
       "seed": 1,
       "fitness": 264.0874329640137,
       "feasible": true,
-      "runtime_s": 0.755707300035283
+      "runtime_s": 0.5960985000128858
     },
     {
       "config": "qpso_ls",
@@ -367,7 +369,7 @@
       "seed": 2,
       "fitness": 264.0503067573481,
       "feasible": true,
-      "runtime_s": 0.7574126000399701
+      "runtime_s": 0.666078899987042
     },
     {
       "config": "qpso_ls",
@@ -376,7 +378,7 @@
       "seed": 3,
       "fitness": 264.0503067573481,
       "feasible": true,
-      "runtime_s": 0.5940872000064701
+      "runtime_s": 0.6392459999769926
     },
     {
       "config": "qpso_ls",
@@ -385,7 +387,7 @@
       "seed": 4,
       "fitness": 264.0874329640137,
       "feasible": true,
-      "runtime_s": 0.8135830000392161
+      "runtime_s": 0.6623899000114761
     },
     {
       "config": "qpso_ls",
@@ -394,7 +396,7 @@
       "seed": 5,
       "fitness": 268.6777740733504,
       "feasible": true,
-      "runtime_s": 0.8159186000120826
+      "runtime_s": 0.5937154000275768
     },
     {
       "config": "exact",
@@ -403,7 +405,7 @@
       "seed": 0,
       "fitness": 284.8106783277193,
       "feasible": true,
-      "runtime_s": 0.8849077000049874
+      "runtime_s": 0.8765613000141457
     },
     {
       "config": "qpso_ls",
@@ -412,7 +414,7 @@
       "seed": 1,
       "fitness": 284.8106783277193,
       "feasible": true,
-      "runtime_s": 0.5873804000439122
+      "runtime_s": 0.7332437000004575
     },
     {
       "config": "qpso_ls",
@@ -421,7 +423,7 @@
       "seed": 2,
       "fitness": 284.8106783277193,
       "feasible": true,
-      "runtime_s": 0.5927947000018321
+      "runtime_s": 0.6050938999978825
     },
     {
       "config": "qpso_ls",
@@ -430,7 +432,7 @@
       "seed": 3,
       "fitness": 284.8106783277193,
       "feasible": true,
-      "runtime_s": 0.7386383999837562
+      "runtime_s": 0.6003913999884389
     },
     {
       "config": "qpso_ls",
@@ -439,7 +441,7 @@
       "seed": 4,
       "fitness": 284.8106783277193,
       "feasible": true,
-      "runtime_s": 0.7502958999830298
+      "runtime_s": 0.5680280000087805
     },
     {
       "config": "qpso_ls",
@@ -448,7 +450,7 @@
       "seed": 5,
       "fitness": 284.8106783277193,
       "feasible": true,
-      "runtime_s": 0.6966627999790944
+      "runtime_s": 0.6407721000141464
     },
     {
       "config": "exact",
@@ -457,7 +459,7 @@
       "seed": 0,
       "fitness": 228.8712841679608,
       "feasible": true,
-      "runtime_s": 0.8885898000444286
+      "runtime_s": 0.8677849000087008
     },
     {
       "config": "qpso_ls",
@@ -466,7 +468,7 @@
       "seed": 1,
       "fitness": 228.87128416796082,
       "feasible": true,
-      "runtime_s": 1.0724870000267401
+      "runtime_s": 0.6136705999961123
     },
     {
       "config": "qpso_ls",
@@ -475,7 +477,7 @@
       "seed": 2,
       "fitness": 228.87128416796082,
       "feasible": true,
-      "runtime_s": 1.0286257000407204
+      "runtime_s": 0.5544058000086807
     },
     {
       "config": "qpso_ls",
@@ -484,7 +486,7 @@
       "seed": 3,
       "fitness": 228.8712841679608,
       "feasible": true,
-      "runtime_s": 0.9885200999560766
+      "runtime_s": 0.6013023999985307
     },
     {
       "config": "qpso_ls",
@@ -493,7 +495,7 @@
       "seed": 4,
       "fitness": 228.8712841679608,
       "feasible": true,
-      "runtime_s": 0.9972970999660902
+      "runtime_s": 0.5537475000019185
     },
     {
       "config": "qpso_ls",
@@ -502,7 +504,7 @@
       "seed": 5,
       "fitness": 228.8712841679608,
       "feasible": true,
-      "runtime_s": 0.998185399977956
+      "runtime_s": 0.5385016000363976
     },
     {
       "config": "exact",
@@ -511,7 +513,7 @@
       "seed": 0,
       "fitness": 326.54394727065153,
       "feasible": true,
-      "runtime_s": 6.9490683999611065
+      "runtime_s": 6.305538400018122
     },
     {
       "config": "qpso_ls",
@@ -520,7 +522,7 @@
       "seed": 1,
       "fitness": 338.9562262411225,
       "feasible": true,
-      "runtime_s": 0.6800613999948837
+      "runtime_s": 0.6334353999700397
     },
     {
       "config": "qpso_ls",
@@ -529,7 +531,7 @@
       "seed": 2,
       "fitness": 338.9562262411225,
       "feasible": true,
-      "runtime_s": 0.682811800041236
+      "runtime_s": 0.619458700006362
     },
     {
       "config": "qpso_ls",
@@ -538,7 +540,7 @@
       "seed": 3,
       "fitness": 330.4692182347534,
       "feasible": true,
-      "runtime_s": 0.6791270999819972
+      "runtime_s": 0.651917000010144
     },
     {
       "config": "qpso_ls",
@@ -547,7 +549,7 @@
       "seed": 4,
       "fitness": 328.5639472706515,
       "feasible": true,
-      "runtime_s": 0.9675070999655873
+      "runtime_s": 0.6718280999921262
     },
     {
       "config": "qpso_ls",
@@ -556,7 +558,7 @@
       "seed": 5,
       "fitness": 339.31622624112254,
       "feasible": true,
-      "runtime_s": 0.9993496999959461
+      "runtime_s": 0.6440455999691039
     },
     {
       "config": "exact",
@@ -565,7 +567,7 @@
       "seed": 0,
       "fitness": 300.3763651493544,
       "feasible": true,
-      "runtime_s": 6.4420688999816775
+      "runtime_s": 6.2888456000364386
     },
     {
       "config": "qpso_ls",
@@ -574,7 +576,7 @@
       "seed": 1,
       "fitness": 300.3763651493544,
       "feasible": true,
-      "runtime_s": 0.6232128000119701
+      "runtime_s": 0.600341200013645
     },
     {
       "config": "qpso_ls",
@@ -583,7 +585,7 @@
       "seed": 2,
       "fitness": 300.3763651493544,
       "feasible": true,
-      "runtime_s": 0.6296323999995366
+      "runtime_s": 0.6572918999590911
     },
     {
       "config": "qpso_ls",
@@ -592,7 +594,7 @@
       "seed": 3,
       "fitness": 300.3763651493544,
       "feasible": true,
-      "runtime_s": 0.717166599992197
+      "runtime_s": 0.6446790000190958
     },
     {
       "config": "qpso_ls",
@@ -601,7 +603,7 @@
       "seed": 4,
       "fitness": 300.3763651493544,
       "feasible": true,
-      "runtime_s": 0.7128003000398166
+      "runtime_s": 0.6019134999951348
     },
     {
       "config": "qpso_ls",
@@ -610,7 +612,7 @@
       "seed": 5,
       "fitness": 300.3763651493544,
       "feasible": true,
-      "runtime_s": 0.7499704999499954
+      "runtime_s": 0.6070620999671519
     },
     {
       "config": "exact",
@@ -619,7 +621,7 @@
       "seed": 0,
       "fitness": 330.0062105265189,
       "feasible": true,
-      "runtime_s": 6.309850200021174
+      "runtime_s": 6.152654699981213
     },
     {
       "config": "qpso_ls",
@@ -628,7 +630,7 @@
       "seed": 1,
       "fitness": 330.0062105265189,
       "feasible": true,
-      "runtime_s": 0.7699306000140496
+      "runtime_s": 0.6382983999792486
     },
     {
       "config": "qpso_ls",
@@ -637,7 +639,7 @@
       "seed": 2,
       "fitness": 331.8566264310422,
       "feasible": true,
-      "runtime_s": 0.7613890999928117
+      "runtime_s": 0.6242112000472844
     },
     {
       "config": "qpso_ls",
@@ -646,7 +648,7 @@
       "seed": 3,
       "fitness": 331.8566264310422,
       "feasible": true,
-      "runtime_s": 0.6913433999870904
+      "runtime_s": 0.6486139999469742
     },
     {
       "config": "qpso_ls",
@@ -655,7 +657,7 @@
       "seed": 4,
       "fitness": 331.8566264310422,
       "feasible": true,
-      "runtime_s": 0.7151416999986395
+      "runtime_s": 0.5936891000019386
     },
     {
       "config": "qpso_ls",
@@ -664,7 +666,7 @@
       "seed": 5,
       "fitness": 344.2822105265189,
       "feasible": true,
-      "runtime_s": 0.646816500055138
+      "runtime_s": 0.6041949999635108
     }
   ],
   "ablations": [
@@ -675,7 +677,7 @@
       "seed": 1,
       "fitness": 580.7284826942011,
       "feasible": true,
-      "runtime_s": 1.6255780999781564
+      "runtime_s": 1.5056153999757953
     },
     {
       "config": "qpso_ls",
@@ -684,7 +686,7 @@
       "seed": 2,
       "fitness": 440.2932225277076,
       "feasible": true,
-      "runtime_s": 1.734657499997411
+      "runtime_s": 1.523996400006581
     },
     {
       "config": "qpso_ls",
@@ -693,7 +695,7 @@
       "seed": 3,
       "fitness": 489.6705308906498,
       "feasible": true,
-      "runtime_s": 1.6793935999739915
+      "runtime_s": 1.5534479000489227
     },
     {
       "config": "qpso_ls",
@@ -702,7 +704,7 @@
       "seed": 4,
       "fitness": 534.289883506427,
       "feasible": true,
-      "runtime_s": 1.9943879999918863
+      "runtime_s": 1.7100980000104755
     },
     {
       "config": "qpso_ls",
@@ -711,7 +713,7 @@
       "seed": 5,
       "fitness": 570.5645702348827,
       "feasible": true,
-      "runtime_s": 1.6944786999956705
+      "runtime_s": 1.6566585000255145
     },
     {
       "config": "qpso",
@@ -720,7 +722,7 @@
       "seed": 1,
       "fitness": 670.9346215881159,
       "feasible": true,
-      "runtime_s": 1.3063669000403024
+      "runtime_s": 1.0264614000334404
     },
     {
       "config": "qpso",
@@ -729,7 +731,7 @@
       "seed": 2,
       "fitness": 565.0948592261033,
       "feasible": true,
-      "runtime_s": 1.5123134999885224
+      "runtime_s": 1.019185799988918
     },
     {
       "config": "qpso",
@@ -738,7 +740,7 @@
       "seed": 3,
       "fitness": 675.8204112081911,
       "feasible": false,
-      "runtime_s": 1.2614680000115186
+      "runtime_s": 1.0418760000029579
     },
     {
       "config": "qpso",
@@ -747,7 +749,7 @@
       "seed": 4,
       "fitness": 550.6163941277389,
       "feasible": true,
-      "runtime_s": 1.4466226000222377
+      "runtime_s": 1.1386979999952018
     },
     {
       "config": "qpso",
@@ -756,7 +758,7 @@
       "seed": 5,
       "fitness": 525.3913788748642,
       "feasible": true,
-      "runtime_s": 1.3497298000147566
+      "runtime_s": 1.0428569999639876
     },
     {
       "config": "qpso_nocap",
@@ -765,7 +767,7 @@
       "seed": 1,
       "fitness": 692.5908580699586,
       "feasible": true,
-      "runtime_s": 1.4694152000010945
+      "runtime_s": 1.1544372000498697
     },
     {
       "config": "qpso_nocap",
@@ -774,7 +776,7 @@
       "seed": 2,
       "fitness": 564.7054975318244,
       "feasible": true,
-      "runtime_s": 1.2458670999621972
+      "runtime_s": 1.0171377999940887
     },
     {
       "config": "qpso_nocap",
@@ -783,7 +785,7 @@
       "seed": 3,
       "fitness": 564.3355197180954,
       "feasible": true,
-      "runtime_s": 1.599112200026866
+      "runtime_s": 0.9604164999909699
     },
     {
       "config": "qpso_nocap",
@@ -792,7 +794,7 @@
       "seed": 4,
       "fitness": 605.2869764498093,
       "feasible": true,
-      "runtime_s": 1.351865100034047
+      "runtime_s": 0.9966414999798872
     },
     {
       "config": "qpso_nocap",
@@ -801,7 +803,52 @@
       "seed": 5,
       "fitness": 550.4631510037758,
       "feasible": true,
-      "runtime_s": 1.630090500053484
+      "runtime_s": 0.9960940000019036
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 20,
+      "instance": 1,
+      "seed": 1,
+      "fitness": 553.4925672682571,
+      "feasible": true,
+      "runtime_s": 1.4775159999844618
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 20,
+      "instance": 1,
+      "seed": 2,
+      "fitness": 458.2687438263095,
+      "feasible": true,
+      "runtime_s": 1.5530450000078417
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 20,
+      "instance": 1,
+      "seed": 3,
+      "fitness": 547.8248728465882,
+      "feasible": true,
+      "runtime_s": 1.6041583999758586
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 20,
+      "instance": 1,
+      "seed": 4,
+      "fitness": 500.8763105431938,
+      "feasible": true,
+      "runtime_s": 1.5487192999571562
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 20,
+      "instance": 1,
+      "seed": 5,
+      "fitness": 447.8858939472754,
+      "feasible": true,
+      "runtime_s": 1.5025672999909148
     },
     {
       "config": "standard_pso",
@@ -810,7 +857,7 @@
       "seed": 1,
       "fitness": 569.725185443924,
       "feasible": true,
-      "runtime_s": 1.3702373000560328
+      "runtime_s": 1.0166400999878533
     },
     {
       "config": "standard_pso",
@@ -819,7 +866,7 @@
       "seed": 2,
       "fitness": 626.1393390422326,
       "feasible": true,
-      "runtime_s": 1.1702265000203624
+      "runtime_s": 0.9464697000221349
     },
     {
       "config": "standard_pso",
@@ -828,7 +875,7 @@
       "seed": 3,
       "fitness": 596.3822335921487,
       "feasible": true,
-      "runtime_s": 1.2944372999481857
+      "runtime_s": 0.9520084999967366
     },
     {
       "config": "standard_pso",
@@ -837,7 +884,7 @@
       "seed": 4,
       "fitness": 581.9049187042349,
       "feasible": true,
-      "runtime_s": 1.2580433000111952
+      "runtime_s": 0.9969446000177413
     },
     {
       "config": "standard_pso",
@@ -846,7 +893,7 @@
       "seed": 5,
       "fitness": 583.0667311455866,
       "feasible": true,
-      "runtime_s": 1.3987580999964848
+      "runtime_s": 1.1309536999906413
     },
     {
       "config": "pso_ls",
@@ -855,7 +902,7 @@
       "seed": 1,
       "fitness": 471.57669696839395,
       "feasible": false,
-      "runtime_s": 1.8156509000109509
+      "runtime_s": 1.4918430999969132
     },
     {
       "config": "pso_ls",
@@ -864,7 +911,7 @@
       "seed": 2,
       "fitness": 511.32364867482056,
       "feasible": true,
-      "runtime_s": 2.3336357999942265
+      "runtime_s": 1.5755625999881886
     },
     {
       "config": "pso_ls",
@@ -873,7 +920,7 @@
       "seed": 3,
       "fitness": 500.83900230374854,
       "feasible": true,
-      "runtime_s": 2.2808039999799803
+      "runtime_s": 1.5150017999694683
     },
     {
       "config": "pso_ls",
@@ -882,7 +929,7 @@
       "seed": 4,
       "fitness": 502.8940745927854,
       "feasible": false,
-      "runtime_s": 1.966633100004401
+      "runtime_s": 1.6904423999949358
     },
     {
       "config": "pso_ls",
@@ -891,7 +938,7 @@
       "seed": 5,
       "fitness": 471.4557689907547,
       "feasible": true,
-      "runtime_s": 1.6194118999992497
+      "runtime_s": 1.4702860999968834
     },
     {
       "config": "ga",
@@ -900,7 +947,7 @@
       "seed": 1,
       "fitness": 650.2713095323236,
       "feasible": false,
-      "runtime_s": 1.3827055000001565
+      "runtime_s": 1.1578427000204101
     },
     {
       "config": "ga",
@@ -909,7 +956,7 @@
       "seed": 2,
       "fitness": 608.9124232492653,
       "feasible": true,
-      "runtime_s": 1.2727713999920525
+      "runtime_s": 1.2004306000308134
     },
     {
       "config": "ga",
@@ -918,7 +965,7 @@
       "seed": 3,
       "fitness": 617.9506412954306,
       "feasible": false,
-      "runtime_s": 1.2649448000011034
+      "runtime_s": 1.2845916000078432
     },
     {
       "config": "ga",
@@ -927,7 +974,7 @@
       "seed": 4,
       "fitness": 625.0457830981617,
       "feasible": true,
-      "runtime_s": 1.4352887999848463
+      "runtime_s": 1.2555373000213876
     },
     {
       "config": "ga",
@@ -936,7 +983,7 @@
       "seed": 5,
       "fitness": 639.2057158607296,
       "feasible": true,
-      "runtime_s": 1.6309403999475762
+      "runtime_s": 1.1664285999722779
     },
     {
       "config": "qpso_ls",
@@ -945,7 +992,7 @@
       "seed": 1,
       "fitness": 1001.7902912748003,
       "feasible": true,
-      "runtime_s": 8.597086100024171
+      "runtime_s": 5.81558449997101
     },
     {
       "config": "qpso_ls",
@@ -954,7 +1001,7 @@
       "seed": 2,
       "fitness": 1022.6670283610003,
       "feasible": true,
-      "runtime_s": 7.357564400008414
+      "runtime_s": 6.562025999999605
     },
     {
       "config": "qpso_ls",
@@ -963,7 +1010,7 @@
       "seed": 3,
       "fitness": 1033.2227806000094,
       "feasible": true,
-      "runtime_s": 7.979527999996208
+      "runtime_s": 6.103406600013841
     },
     {
       "config": "qpso_ls",
@@ -972,7 +1019,7 @@
       "seed": 4,
       "fitness": 1051.6862477593363,
       "feasible": true,
-      "runtime_s": 8.034167300036643
+      "runtime_s": 6.112797500041779
     },
     {
       "config": "qpso_ls",
@@ -981,7 +1028,7 @@
       "seed": 5,
       "fitness": 1036.8586737234566,
       "feasible": true,
-      "runtime_s": 7.6594203999848105
+      "runtime_s": 5.8512761000311
     },
     {
       "config": "qpso",
@@ -990,7 +1037,7 @@
       "seed": 1,
       "fitness": 1880.5116452374882,
       "feasible": false,
-      "runtime_s": 2.2340717000188306
+      "runtime_s": 1.9350435999804176
     },
     {
       "config": "qpso",
@@ -999,7 +1046,7 @@
       "seed": 2,
       "fitness": 1325.2073101209112,
       "feasible": true,
-      "runtime_s": 2.6302012999658473
+      "runtime_s": 1.822665300045628
     },
     {
       "config": "qpso",
@@ -1008,7 +1055,7 @@
       "seed": 3,
       "fitness": 2963.0597295765006,
       "feasible": false,
-      "runtime_s": 2.853456199984066
+      "runtime_s": 1.9434750999789685
     },
     {
       "config": "qpso",
@@ -1017,7 +1064,7 @@
       "seed": 4,
       "fitness": 2154.1440161615305,
       "feasible": false,
-      "runtime_s": 2.094348600017838
+      "runtime_s": 1.8224547000136226
     },
     {
       "config": "qpso",
@@ -1026,7 +1073,7 @@
       "seed": 5,
       "fitness": 2221.28895121222,
       "feasible": false,
-      "runtime_s": 2.1928881999920122
+      "runtime_s": 2.078013199963607
     },
     {
       "config": "qpso_nocap",
@@ -1035,7 +1082,7 @@
       "seed": 1,
       "fitness": 1878.6441448652115,
       "feasible": false,
-      "runtime_s": 2.132643699995242
+      "runtime_s": 2.0718927000416443
     },
     {
       "config": "qpso_nocap",
@@ -1044,7 +1091,7 @@
       "seed": 2,
       "fitness": 2233.321554743189,
       "feasible": false,
-      "runtime_s": 2.6496847000089474
+      "runtime_s": 2.107346599979792
     },
     {
       "config": "qpso_nocap",
@@ -1053,7 +1100,7 @@
       "seed": 3,
       "fitness": 1695.8979398721513,
       "feasible": false,
-      "runtime_s": 2.3347481999662705
+      "runtime_s": 1.7868538000038825
     },
     {
       "config": "qpso_nocap",
@@ -1062,7 +1109,7 @@
       "seed": 4,
       "fitness": 2335.551451348742,
       "feasible": false,
-      "runtime_s": 1.9178607999929227
+      "runtime_s": 1.9799043000093661
     },
     {
       "config": "qpso_nocap",
@@ -1071,7 +1118,52 @@
       "seed": 5,
       "fitness": 2872.1695785225106,
       "feasible": false,
-      "runtime_s": 2.2896167999715544
+      "runtime_s": 1.7944176000310108
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 40,
+      "instance": 1,
+      "seed": 1,
+      "fitness": 1052.659580005025,
+      "feasible": true,
+      "runtime_s": 6.306854099966586
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 40,
+      "instance": 1,
+      "seed": 2,
+      "fitness": 1009.2257215659795,
+      "feasible": true,
+      "runtime_s": 6.514800799952354
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 40,
+      "instance": 1,
+      "seed": 3,
+      "fitness": 945.1089866545541,
+      "feasible": true,
+      "runtime_s": 6.915256899956148
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 40,
+      "instance": 1,
+      "seed": 4,
+      "fitness": 998.6382341091552,
+      "feasible": true,
+      "runtime_s": 5.987362899992149
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 40,
+      "instance": 1,
+      "seed": 5,
+      "fitness": 973.5352656558749,
+      "feasible": true,
+      "runtime_s": 5.849715000018477
     },
     {
       "config": "standard_pso",
@@ -1080,7 +1172,7 @@
       "seed": 1,
       "fitness": 1437.7115558443852,
       "feasible": true,
-      "runtime_s": 1.9794145000050776
+      "runtime_s": 1.8028966000420041
     },
     {
       "config": "standard_pso",
@@ -1089,7 +1181,7 @@
       "seed": 2,
       "fitness": 1385.4449335558284,
       "feasible": true,
-      "runtime_s": 2.711706700036302
+      "runtime_s": 1.771103100036271
     },
     {
       "config": "standard_pso",
@@ -1098,7 +1190,7 @@
       "seed": 3,
       "fitness": 1420.1384734560272,
       "feasible": true,
-      "runtime_s": 2.3821770999929868
+      "runtime_s": 1.9140945000108331
     },
     {
       "config": "standard_pso",
@@ -1107,7 +1199,7 @@
       "seed": 4,
       "fitness": 1309.324267592537,
       "feasible": true,
-      "runtime_s": 2.6049977999646217
+      "runtime_s": 1.9972638000035658
     },
     {
       "config": "standard_pso",
@@ -1116,7 +1208,7 @@
       "seed": 5,
       "fitness": 1431.0345611025364,
       "feasible": true,
-      "runtime_s": 2.3939623999758624
+      "runtime_s": 1.9078418999561109
     },
     {
       "config": "pso_ls",
@@ -1125,7 +1217,7 @@
       "seed": 1,
       "fitness": 1019.7905189864091,
       "feasible": true,
-      "runtime_s": 7.821126499969978
+      "runtime_s": 6.564124699973036
     },
     {
       "config": "pso_ls",
@@ -1134,7 +1226,7 @@
       "seed": 2,
       "fitness": 1014.6648658354419,
       "feasible": true,
-      "runtime_s": 7.029189199965913
+      "runtime_s": 6.380705600022338
     },
     {
       "config": "pso_ls",
@@ -1143,7 +1235,7 @@
       "seed": 3,
       "fitness": 1014.61496988822,
       "feasible": true,
-      "runtime_s": 7.746515399951022
+      "runtime_s": 5.813610700017307
     },
     {
       "config": "pso_ls",
@@ -1152,7 +1244,7 @@
       "seed": 4,
       "fitness": 1036.2721682142037,
       "feasible": true,
-      "runtime_s": 7.1101275000255555
+      "runtime_s": 5.902045599999838
     },
     {
       "config": "pso_ls",
@@ -1161,7 +1253,7 @@
       "seed": 5,
       "fitness": 1018.8740767036418,
       "feasible": true,
-      "runtime_s": 6.943669700005557
+      "runtime_s": 5.7348695999826305
     },
     {
       "config": "ga",
@@ -1170,7 +1262,7 @@
       "seed": 1,
       "fitness": 1525.7446460457068,
       "feasible": true,
-      "runtime_s": 2.119475199957378
+      "runtime_s": 2.0799486999749206
     },
     {
       "config": "ga",
@@ -1179,7 +1271,7 @@
       "seed": 2,
       "fitness": 1519.3640638465024,
       "feasible": true,
-      "runtime_s": 2.613706399977673
+      "runtime_s": 2.239966099965386
     },
     {
       "config": "ga",
@@ -1188,7 +1280,7 @@
       "seed": 3,
       "fitness": 1652.236543605378,
       "feasible": false,
-      "runtime_s": 2.458805400005076
+      "runtime_s": 2.342143899993971
     },
     {
       "config": "ga",
@@ -1197,7 +1289,7 @@
       "seed": 4,
       "fitness": 1714.5934094280465,
       "feasible": false,
-      "runtime_s": 2.455718600016553
+      "runtime_s": 2.014021099952515
     },
     {
       "config": "ga",
@@ -1206,7 +1298,7 @@
       "seed": 5,
       "fitness": 1539.9860784996365,
       "feasible": true,
-      "runtime_s": 2.2727888000081293
+      "runtime_s": 2.3233331000083126
     },
     {
       "config": "qpso_ls",
@@ -1215,7 +1307,7 @@
       "seed": 1,
       "fitness": 1443.7538408103849,
       "feasible": true,
-      "runtime_s": 21.012013700034004
+      "runtime_s": 17.94932300003711
     },
     {
       "config": "qpso_ls",
@@ -1224,7 +1316,7 @@
       "seed": 2,
       "fitness": 1423.7466630745673,
       "feasible": true,
-      "runtime_s": 21.145060100010596
+      "runtime_s": 15.95637450000504
     },
     {
       "config": "qpso_ls",
@@ -1233,7 +1325,7 @@
       "seed": 3,
       "fitness": 1438.167624866116,
       "feasible": false,
-      "runtime_s": 19.77028449997306
+      "runtime_s": 17.97882049996406
     },
     {
       "config": "qpso_ls",
@@ -1242,7 +1334,7 @@
       "seed": 4,
       "fitness": 1365.2396525098866,
       "feasible": false,
-      "runtime_s": 22.015838199993595
+      "runtime_s": 18.282988899969496
     },
     {
       "config": "qpso_ls",
@@ -1251,7 +1343,7 @@
       "seed": 5,
       "fitness": 1355.8588657039727,
       "feasible": true,
-      "runtime_s": 20.53476509999018
+      "runtime_s": 15.929075199994259
     },
     {
       "config": "qpso",
@@ -1260,7 +1352,7 @@
       "seed": 1,
       "fitness": 5031.107965808527,
       "feasible": false,
-      "runtime_s": 3.1114105000160635
+      "runtime_s": 3.2351187000167556
     },
     {
       "config": "qpso",
@@ -1269,7 +1361,7 @@
       "seed": 2,
       "fitness": 2360.218619576846,
       "feasible": false,
-      "runtime_s": 3.335442299954593
+      "runtime_s": 3.04112680000253
     },
     {
       "config": "qpso",
@@ -1278,7 +1370,7 @@
       "seed": 3,
       "fitness": 7333.747550179161,
       "feasible": false,
-      "runtime_s": 3.080440499994438
+      "runtime_s": 2.6669037000392564
     },
     {
       "config": "qpso",
@@ -1287,7 +1379,7 @@
       "seed": 4,
       "fitness": 3217.5768929683745,
       "feasible": false,
-      "runtime_s": 2.9355392000288703
+      "runtime_s": 3.214150100015104
     },
     {
       "config": "qpso",
@@ -1296,7 +1388,7 @@
       "seed": 5,
       "fitness": 2790.5703829386675,
       "feasible": false,
-      "runtime_s": 3.1853528000065126
+      "runtime_s": 2.6385136999888346
     },
     {
       "config": "qpso_nocap",
@@ -1305,7 +1397,7 @@
       "seed": 1,
       "fitness": 9208.184175695229,
       "feasible": false,
-      "runtime_s": 3.029723300016485
+      "runtime_s": 2.7526169000193477
     },
     {
       "config": "qpso_nocap",
@@ -1314,7 +1406,7 @@
       "seed": 2,
       "fitness": 7664.936830460039,
       "feasible": false,
-      "runtime_s": 3.4940346000366844
+      "runtime_s": 2.7214582999586128
     },
     {
       "config": "qpso_nocap",
@@ -1323,7 +1415,7 @@
       "seed": 3,
       "fitness": 7265.61970559415,
       "feasible": false,
-      "runtime_s": 2.8307774999993853
+      "runtime_s": 2.885447100037709
     },
     {
       "config": "qpso_nocap",
@@ -1332,7 +1424,7 @@
       "seed": 4,
       "fitness": 8698.590623908774,
       "feasible": false,
-      "runtime_s": 2.8773278999724425
+      "runtime_s": 2.7500747000449337
     },
     {
       "config": "qpso_nocap",
@@ -1341,7 +1433,52 @@
       "seed": 5,
       "fitness": 8089.915058356426,
       "feasible": false,
-      "runtime_s": 3.105742999992799
+      "runtime_s": 2.7944418999832124
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 60,
+      "instance": 1,
+      "seed": 1,
+      "fitness": 1410.666008522002,
+      "feasible": true,
+      "runtime_s": 14.991268200043123
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 60,
+      "instance": 1,
+      "seed": 2,
+      "fitness": 1428.0892611421978,
+      "feasible": true,
+      "runtime_s": 17.57687910000095
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 60,
+      "instance": 1,
+      "seed": 3,
+      "fitness": 1372.9006617150658,
+      "feasible": true,
+      "runtime_s": 16.233424200036097
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 60,
+      "instance": 1,
+      "seed": 4,
+      "fitness": 1365.2396525098866,
+      "feasible": false,
+      "runtime_s": 16.858494999993127
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 60,
+      "instance": 1,
+      "seed": 5,
+      "fitness": 1482.918569327951,
+      "feasible": true,
+      "runtime_s": 15.374387999996543
     },
     {
       "config": "standard_pso",
@@ -1350,7 +1487,7 @@
       "seed": 1,
       "fitness": 3699.0536415178603,
       "feasible": false,
-      "runtime_s": 3.6227274000411853
+      "runtime_s": 2.7177224999759346
     },
     {
       "config": "standard_pso",
@@ -1359,7 +1496,7 @@
       "seed": 2,
       "fitness": 2188.9679370860736,
       "feasible": false,
-      "runtime_s": 2.7643038000096567
+      "runtime_s": 2.6634867999819107
     },
     {
       "config": "standard_pso",
@@ -1368,7 +1505,7 @@
       "seed": 3,
       "fitness": 2097.254262432728,
       "feasible": false,
-      "runtime_s": 3.5597695999895222
+      "runtime_s": 2.7305411000270396
     },
     {
       "config": "standard_pso",
@@ -1377,7 +1514,7 @@
       "seed": 4,
       "fitness": 2733.6840146414675,
       "feasible": false,
-      "runtime_s": 2.811788599996362
+      "runtime_s": 2.690524199977517
     },
     {
       "config": "standard_pso",
@@ -1386,7 +1523,7 @@
       "seed": 5,
       "fitness": 2899.115105378747,
       "feasible": false,
-      "runtime_s": 3.272893199988175
+      "runtime_s": 2.6868474000366405
     },
     {
       "config": "pso_ls",
@@ -1395,7 +1532,7 @@
       "seed": 1,
       "fitness": 1367.0253263250424,
       "feasible": true,
-      "runtime_s": 20.228009500016924
+      "runtime_s": 17.313757200026885
     },
     {
       "config": "pso_ls",
@@ -1404,7 +1541,7 @@
       "seed": 2,
       "fitness": 1480.258345088663,
       "feasible": true,
-      "runtime_s": 15.69678560004104
+      "runtime_s": 14.72256240004208
     },
     {
       "config": "pso_ls",
@@ -1413,7 +1550,7 @@
       "seed": 3,
       "fitness": 1454.7567070239593,
       "feasible": true,
-      "runtime_s": 16.767547800031025
+      "runtime_s": 16.180123500002082
     },
     {
       "config": "pso_ls",
@@ -1422,7 +1559,7 @@
       "seed": 4,
       "fitness": 1460.724440270702,
       "feasible": true,
-      "runtime_s": 16.516824100050144
+      "runtime_s": 16.868146599968895
     },
     {
       "config": "pso_ls",
@@ -1431,7 +1568,7 @@
       "seed": 5,
       "fitness": 1447.672189450697,
       "feasible": true,
-      "runtime_s": 16.900299500033725
+      "runtime_s": 17.8558289000066
     },
     {
       "config": "ga",
@@ -1440,7 +1577,7 @@
       "seed": 1,
       "fitness": 5100.015791022901,
       "feasible": false,
-      "runtime_s": 4.7208552999654785
+      "runtime_s": 3.213723699969705
     },
     {
       "config": "ga",
@@ -1449,7 +1586,7 @@
       "seed": 2,
       "fitness": 5297.662762725489,
       "feasible": false,
-      "runtime_s": 3.1240631000255235
+      "runtime_s": 2.935259399993811
     },
     {
       "config": "ga",
@@ -1458,7 +1595,7 @@
       "seed": 3,
       "fitness": 4785.7552547267815,
       "feasible": false,
-      "runtime_s": 3.1923688999959268
+      "runtime_s": 3.296324499999173
     },
     {
       "config": "ga",
@@ -1467,7 +1604,7 @@
       "seed": 4,
       "fitness": 4523.022865619776,
       "feasible": false,
-      "runtime_s": 3.0391299999901094
+      "runtime_s": 2.816252799995709
     },
     {
       "config": "ga",
@@ -1476,7 +1613,637 @@
       "seed": 5,
       "fitness": 4593.476265865476,
       "feasible": false,
-      "runtime_s": 3.220248099998571
+      "runtime_s": 3.221292899979744
+    },
+    {
+      "config": "qpso_ls",
+      "n": 80,
+      "instance": 1,
+      "seed": 1,
+      "fitness": 1839.0141362377242,
+      "feasible": true,
+      "runtime_s": 36.399846599961165
+    },
+    {
+      "config": "qpso_ls",
+      "n": 80,
+      "instance": 1,
+      "seed": 2,
+      "fitness": 1737.120561920736,
+      "feasible": true,
+      "runtime_s": 37.54896230000304
+    },
+    {
+      "config": "qpso_ls",
+      "n": 80,
+      "instance": 1,
+      "seed": 3,
+      "fitness": 1753.7764360052574,
+      "feasible": true,
+      "runtime_s": 39.442274799977895
+    },
+    {
+      "config": "qpso_ls",
+      "n": 80,
+      "instance": 1,
+      "seed": 4,
+      "fitness": 1772.7890381418897,
+      "feasible": true,
+      "runtime_s": 36.95789209997747
+    },
+    {
+      "config": "qpso_ls",
+      "n": 80,
+      "instance": 1,
+      "seed": 5,
+      "fitness": 1802.8746636039352,
+      "feasible": true,
+      "runtime_s": 36.023654200020246
+    },
+    {
+      "config": "qpso",
+      "n": 80,
+      "instance": 1,
+      "seed": 1,
+      "fitness": 4881.192241522533,
+      "feasible": false,
+      "runtime_s": 3.4598161000176333
+    },
+    {
+      "config": "qpso",
+      "n": 80,
+      "instance": 1,
+      "seed": 2,
+      "fitness": 7031.848919491383,
+      "feasible": false,
+      "runtime_s": 3.977541400003247
+    },
+    {
+      "config": "qpso",
+      "n": 80,
+      "instance": 1,
+      "seed": 3,
+      "fitness": 15791.823859037191,
+      "feasible": false,
+      "runtime_s": 3.5505207999958657
+    },
+    {
+      "config": "qpso",
+      "n": 80,
+      "instance": 1,
+      "seed": 4,
+      "fitness": 16555.326710434078,
+      "feasible": false,
+      "runtime_s": 4.107123799971305
+    },
+    {
+      "config": "qpso",
+      "n": 80,
+      "instance": 1,
+      "seed": 5,
+      "fitness": 11356.66156974854,
+      "feasible": false,
+      "runtime_s": 4.13044160004938
+    },
+    {
+      "config": "qpso_nocap",
+      "n": 80,
+      "instance": 1,
+      "seed": 1,
+      "fitness": 16199.48538812895,
+      "feasible": false,
+      "runtime_s": 3.6780801999848336
+    },
+    {
+      "config": "qpso_nocap",
+      "n": 80,
+      "instance": 1,
+      "seed": 2,
+      "fitness": 11120.588892342268,
+      "feasible": false,
+      "runtime_s": 3.544663400040008
+    },
+    {
+      "config": "qpso_nocap",
+      "n": 80,
+      "instance": 1,
+      "seed": 3,
+      "fitness": 16611.764234792387,
+      "feasible": false,
+      "runtime_s": 3.7079756000312045
+    },
+    {
+      "config": "qpso_nocap",
+      "n": 80,
+      "instance": 1,
+      "seed": 4,
+      "fitness": 15278.258458907432,
+      "feasible": false,
+      "runtime_s": 3.4965652999817394
+    },
+    {
+      "config": "qpso_nocap",
+      "n": 80,
+      "instance": 1,
+      "seed": 5,
+      "fitness": 15785.509952093185,
+      "feasible": false,
+      "runtime_s": 4.090154400037136
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 80,
+      "instance": 1,
+      "seed": 1,
+      "fitness": 1847.579200287,
+      "feasible": true,
+      "runtime_s": 34.937641700031236
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 80,
+      "instance": 1,
+      "seed": 2,
+      "fitness": 1851.3539013129857,
+      "feasible": false,
+      "runtime_s": 32.489524900040124
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 80,
+      "instance": 1,
+      "seed": 3,
+      "fitness": 1718.7246911940506,
+      "feasible": true,
+      "runtime_s": 36.587404799996875
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 80,
+      "instance": 1,
+      "seed": 4,
+      "fitness": 1772.7890381418897,
+      "feasible": true,
+      "runtime_s": 36.87236579996534
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 80,
+      "instance": 1,
+      "seed": 5,
+      "fitness": 1764.646777363438,
+      "feasible": true,
+      "runtime_s": 35.79705330001889
+    },
+    {
+      "config": "standard_pso",
+      "n": 80,
+      "instance": 1,
+      "seed": 1,
+      "fitness": 5595.886222986906,
+      "feasible": false,
+      "runtime_s": 3.3741070000105537
+    },
+    {
+      "config": "standard_pso",
+      "n": 80,
+      "instance": 1,
+      "seed": 2,
+      "fitness": 7815.650892065778,
+      "feasible": false,
+      "runtime_s": 3.97093260003021
+    },
+    {
+      "config": "standard_pso",
+      "n": 80,
+      "instance": 1,
+      "seed": 3,
+      "fitness": 5734.634519250022,
+      "feasible": false,
+      "runtime_s": 3.7364451000466943
+    },
+    {
+      "config": "standard_pso",
+      "n": 80,
+      "instance": 1,
+      "seed": 4,
+      "fitness": 9749.010991464158,
+      "feasible": false,
+      "runtime_s": 4.015618700010236
+    },
+    {
+      "config": "standard_pso",
+      "n": 80,
+      "instance": 1,
+      "seed": 5,
+      "fitness": 4083.2841626082372,
+      "feasible": false,
+      "runtime_s": 4.093262300011702
+    },
+    {
+      "config": "pso_ls",
+      "n": 80,
+      "instance": 1,
+      "seed": 1,
+      "fitness": 1756.9255902904204,
+      "feasible": true,
+      "runtime_s": 35.01263569999719
+    },
+    {
+      "config": "pso_ls",
+      "n": 80,
+      "instance": 1,
+      "seed": 2,
+      "fitness": 1843.3398223253248,
+      "feasible": true,
+      "runtime_s": 36.867702800023835
+    },
+    {
+      "config": "pso_ls",
+      "n": 80,
+      "instance": 1,
+      "seed": 3,
+      "fitness": 1789.8154258962961,
+      "feasible": false,
+      "runtime_s": 37.81951569998637
+    },
+    {
+      "config": "pso_ls",
+      "n": 80,
+      "instance": 1,
+      "seed": 4,
+      "fitness": 1772.7890381418897,
+      "feasible": true,
+      "runtime_s": 39.64615520002553
+    },
+    {
+      "config": "pso_ls",
+      "n": 80,
+      "instance": 1,
+      "seed": 5,
+      "fitness": 1765.265562638654,
+      "feasible": true,
+      "runtime_s": 39.00407460000133
+    },
+    {
+      "config": "ga",
+      "n": 80,
+      "instance": 1,
+      "seed": 1,
+      "fitness": 9702.778841480002,
+      "feasible": false,
+      "runtime_s": 4.201161900011357
+    },
+    {
+      "config": "ga",
+      "n": 80,
+      "instance": 1,
+      "seed": 2,
+      "fitness": 9513.394213771273,
+      "feasible": false,
+      "runtime_s": 4.19776270003058
+    },
+    {
+      "config": "ga",
+      "n": 80,
+      "instance": 1,
+      "seed": 3,
+      "fitness": 9414.245073369784,
+      "feasible": false,
+      "runtime_s": 3.8758292999700643
+    },
+    {
+      "config": "ga",
+      "n": 80,
+      "instance": 1,
+      "seed": 4,
+      "fitness": 8608.763191924787,
+      "feasible": false,
+      "runtime_s": 3.9765285000321455
+    },
+    {
+      "config": "ga",
+      "n": 80,
+      "instance": 1,
+      "seed": 5,
+      "fitness": 8102.408438951255,
+      "feasible": false,
+      "runtime_s": 3.770392000034917
+    },
+    {
+      "config": "qpso_ls",
+      "n": 100,
+      "instance": 1,
+      "seed": 1,
+      "fitness": 2100.1255779099647,
+      "feasible": true,
+      "runtime_s": 65.19283089996316
+    },
+    {
+      "config": "qpso_ls",
+      "n": 100,
+      "instance": 1,
+      "seed": 2,
+      "fitness": 2213.1507903455804,
+      "feasible": true,
+      "runtime_s": 65.99499790003756
+    },
+    {
+      "config": "qpso_ls",
+      "n": 100,
+      "instance": 1,
+      "seed": 3,
+      "fitness": 2176.3056288570424,
+      "feasible": true,
+      "runtime_s": 63.274152100028004
+    },
+    {
+      "config": "qpso_ls",
+      "n": 100,
+      "instance": 1,
+      "seed": 4,
+      "fitness": 2185.58008507115,
+      "feasible": true,
+      "runtime_s": 72.38859859999502
+    },
+    {
+      "config": "qpso_ls",
+      "n": 100,
+      "instance": 1,
+      "seed": 5,
+      "fitness": 2189.459681932404,
+      "feasible": true,
+      "runtime_s": 66.44055199995637
+    },
+    {
+      "config": "qpso",
+      "n": 100,
+      "instance": 1,
+      "seed": 1,
+      "fitness": 19316.8033304601,
+      "feasible": false,
+      "runtime_s": 4.608684899983928
+    },
+    {
+      "config": "qpso",
+      "n": 100,
+      "instance": 1,
+      "seed": 2,
+      "fitness": 28363.811787820225,
+      "feasible": false,
+      "runtime_s": 5.536732200009283
+    },
+    {
+      "config": "qpso",
+      "n": 100,
+      "instance": 1,
+      "seed": 3,
+      "fitness": 22137.16850256764,
+      "feasible": false,
+      "runtime_s": 4.271120699995663
+    },
+    {
+      "config": "qpso",
+      "n": 100,
+      "instance": 1,
+      "seed": 4,
+      "fitness": 11705.643436585367,
+      "feasible": false,
+      "runtime_s": 4.908079100016039
+    },
+    {
+      "config": "qpso",
+      "n": 100,
+      "instance": 1,
+      "seed": 5,
+      "fitness": 17768.754521483006,
+      "feasible": false,
+      "runtime_s": 4.241298699984327
+    },
+    {
+      "config": "qpso_nocap",
+      "n": 100,
+      "instance": 1,
+      "seed": 1,
+      "fitness": 27632.387165705157,
+      "feasible": false,
+      "runtime_s": 4.5957181000267155
+    },
+    {
+      "config": "qpso_nocap",
+      "n": 100,
+      "instance": 1,
+      "seed": 2,
+      "fitness": 27972.67602042464,
+      "feasible": false,
+      "runtime_s": 5.045507300004829
+    },
+    {
+      "config": "qpso_nocap",
+      "n": 100,
+      "instance": 1,
+      "seed": 3,
+      "fitness": 24653.492842268606,
+      "feasible": false,
+      "runtime_s": 4.900190599961206
+    },
+    {
+      "config": "qpso_nocap",
+      "n": 100,
+      "instance": 1,
+      "seed": 4,
+      "fitness": 27095.152087775485,
+      "feasible": false,
+      "runtime_s": 4.378948500030674
+    },
+    {
+      "config": "qpso_nocap",
+      "n": 100,
+      "instance": 1,
+      "seed": 5,
+      "fitness": 23928.119282855492,
+      "feasible": false,
+      "runtime_s": 5.187020000012126
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 100,
+      "instance": 1,
+      "seed": 1,
+      "fitness": 2100.1255779099647,
+      "feasible": true,
+      "runtime_s": 66.13169710000511
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 100,
+      "instance": 1,
+      "seed": 2,
+      "fitness": 2291.194051995231,
+      "feasible": false,
+      "runtime_s": 65.76308079995215
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 100,
+      "instance": 1,
+      "seed": 3,
+      "fitness": 2205.061450927208,
+      "feasible": true,
+      "runtime_s": 72.59766460000537
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 100,
+      "instance": 1,
+      "seed": 4,
+      "fitness": 2191.7558478743917,
+      "feasible": true,
+      "runtime_s": 65.21741539996583
+    },
+    {
+      "config": "qpso_ls_nocap",
+      "n": 100,
+      "instance": 1,
+      "seed": 5,
+      "fitness": 2185.8797240054478,
+      "feasible": true,
+      "runtime_s": 64.46063549997052
+    },
+    {
+      "config": "standard_pso",
+      "n": 100,
+      "instance": 1,
+      "seed": 1,
+      "fitness": 7275.187659520357,
+      "feasible": false,
+      "runtime_s": 4.890355800045654
+    },
+    {
+      "config": "standard_pso",
+      "n": 100,
+      "instance": 1,
+      "seed": 2,
+      "fitness": 9278.582300150942,
+      "feasible": false,
+      "runtime_s": 4.406272099993657
+    },
+    {
+      "config": "standard_pso",
+      "n": 100,
+      "instance": 1,
+      "seed": 3,
+      "fitness": 5408.592258226221,
+      "feasible": false,
+      "runtime_s": 5.002092399983667
+    },
+    {
+      "config": "standard_pso",
+      "n": 100,
+      "instance": 1,
+      "seed": 4,
+      "fitness": 12852.692352982365,
+      "feasible": false,
+      "runtime_s": 4.2852456999826245
+    },
+    {
+      "config": "standard_pso",
+      "n": 100,
+      "instance": 1,
+      "seed": 5,
+      "fitness": 21180.5025287929,
+      "feasible": false,
+      "runtime_s": 4.316900800040457
+    },
+    {
+      "config": "pso_ls",
+      "n": 100,
+      "instance": 1,
+      "seed": 1,
+      "fitness": 2172.4556781309284,
+      "feasible": true,
+      "runtime_s": 66.74659960001009
+    },
+    {
+      "config": "pso_ls",
+      "n": 100,
+      "instance": 1,
+      "seed": 2,
+      "fitness": 2124.723174953283,
+      "feasible": true,
+      "runtime_s": 74.43261409999104
+    },
+    {
+      "config": "pso_ls",
+      "n": 100,
+      "instance": 1,
+      "seed": 3,
+      "fitness": 2261.442763987208,
+      "feasible": true,
+      "runtime_s": 60.504504399956204
+    },
+    {
+      "config": "pso_ls",
+      "n": 100,
+      "instance": 1,
+      "seed": 4,
+      "fitness": 2180.166266717607,
+      "feasible": true,
+      "runtime_s": 56.93413460004376
+    },
+    {
+      "config": "pso_ls",
+      "n": 100,
+      "instance": 1,
+      "seed": 5,
+      "fitness": 2276.938908825503,
+      "feasible": true,
+      "runtime_s": 56.897303400037345
+    },
+    {
+      "config": "ga",
+      "n": 100,
+      "instance": 1,
+      "seed": 1,
+      "fitness": 14406.307298513679,
+      "feasible": false,
+      "runtime_s": 5.111165800015442
+    },
+    {
+      "config": "ga",
+      "n": 100,
+      "instance": 1,
+      "seed": 2,
+      "fitness": 17460.695206462628,
+      "feasible": false,
+      "runtime_s": 4.882162900001276
+    },
+    {
+      "config": "ga",
+      "n": 100,
+      "instance": 1,
+      "seed": 3,
+      "fitness": 15870.597193618743,
+      "feasible": false,
+      "runtime_s": 5.104798000014853
+    },
+    {
+      "config": "ga",
+      "n": 100,
+      "instance": 1,
+      "seed": 4,
+      "fitness": 15784.266437573777,
+      "feasible": false,
+      "runtime_s": 5.180631099967286
+    },
+    {
+      "config": "ga",
+      "n": 100,
+      "instance": 1,
+      "seed": 5,
+      "fitness": 15148.014900291717,
+      "feasible": false,
+      "runtime_s": 4.796647099952679
     }
   ]
 }
