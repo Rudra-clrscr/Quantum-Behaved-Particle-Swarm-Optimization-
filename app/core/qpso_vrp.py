@@ -16,7 +16,10 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 from app.core.vrp_problem import VRPProblem, evaluate_chromosome, VRPSolution
-from app.core.local_search import local_search_refine, routes_to_chromosome
+from app.core.local_search import (
+    LOCAL_SEARCH_INTERVAL, LOCAL_SEARCH_PASSES,
+    is_refinement_iteration, refine_best, reinject_into_worst,
+)
 
 
 @dataclass
@@ -40,8 +43,8 @@ class QPSOVRPOptimizer:
         time_window_penalty_weight: float = 10.0,
         max_jump_factor: Optional[float] = None,
         use_local_search: bool = True,
-        local_search_interval: int = 15,
-        local_search_passes: int = 2,
+        local_search_interval: int = LOCAL_SEARCH_INTERVAL,
+        local_search_passes: int = LOCAL_SEARCH_PASSES,
     ):
         self.problem = problem
         self.n_particles = n_particles
@@ -141,28 +144,15 @@ class QPSOVRPOptimizer:
             convergence_curve.append(gbest_fit)
 
             # --- Memetic hybridization: periodically refine gbest with local search ---
+            # (shared with standard PSO -- see local_search.py)
             if self.use_local_search and gbest_sol is not None and \
-               (it % self.local_search_interval == 0) and it > 0:
-                refined_routes = local_search_refine(
-                    self.problem, gbest_sol.routes, max_passes=self.local_search_passes
-                )
-                from app.core.vrp_problem import evaluate_solution
-                refined_sol = evaluate_solution(self.problem, refined_routes)
-
-                if refined_sol.fitness < gbest_fit:
-                    gbest_fit = refined_sol.fitness
-                    gbest_sol = refined_sol
-                    gbest = routes_to_chromosome(self.problem, refined_routes)
-                    gbest = np.clip(gbest, 0.0, upper - 1e-9)
-
-                    # Lamarckian reinjection: replace the worst particle in the
-                    # swarm with the refined solution so the population can
-                    # build further on this improvement rather than losing it.
-                    worst_idx = int(np.argmax(pbest_fit))
-                    positions[worst_idx] = gbest.copy()
-                    pbest[worst_idx] = gbest.copy()
-                    pbest_fit[worst_idx] = gbest_fit
-                    pbest_sol[worst_idx] = refined_sol
+               is_refinement_iteration(it, self.local_search_interval):
+                refined = refine_best(self.problem, gbest_sol, gbest_fit, self.local_search_passes)
+                if refined is not None:
+                    gbest_sol, gbest = refined
+                    gbest_fit = gbest_sol.fitness
+                    worst_idx = reinject_into_worst(positions, pbest, pbest_fit, gbest, gbest_fit)
+                    pbest_sol[worst_idx] = gbest_sol
 
                     convergence_curve[-1] = gbest_fit  # reflect the refinement in this iteration's record
 
@@ -171,14 +161,10 @@ class QPSOVRPOptimizer:
 
         # Final polish: one more local-search refinement on the best solution found
         if self.use_local_search and gbest_sol is not None:
-            from app.core.vrp_problem import evaluate_solution
-            refined_routes = local_search_refine(
-                self.problem, gbest_sol.routes, max_passes=self.local_search_passes + 1
-            )
-            refined_sol = evaluate_solution(self.problem, refined_routes)
-            if refined_sol.fitness < gbest_fit:
-                gbest_fit = refined_sol.fitness
-                gbest_sol = refined_sol
+            refined = refine_best(self.problem, gbest_sol, gbest_fit, self.local_search_passes + 1)
+            if refined is not None:
+                gbest_sol = refined[0]
+                gbest_fit = gbest_sol.fitness
                 if convergence_curve:
                     convergence_curve[-1] = gbest_fit
 

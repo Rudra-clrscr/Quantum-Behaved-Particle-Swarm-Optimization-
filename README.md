@@ -26,7 +26,9 @@ Two modifications on top of standard QPSO for CVRPTW:
 2. **Memetic hybridization** — QPSO's global search is paired with 2-opt and
    single-customer relocation ([`app/core/local_search.py`](app/core/local_search.py)).
    On its own QPSO trails standard PSO at 40–60 customers; with local search it
-   leads, at a runtime cost.
+   leads, at a runtime cost. The same local search added to standard PSO does
+   as well, so the gain comes from local search rather than from QPSO
+   ([`docs/RESULTS.md`](docs/RESULTS.md) §4).
 
 Plus an optional **time-dependent, congestion-aware** extension
 ([`app/core/traffic_profile.py`](app/core/traffic_profile.py)) that prices
@@ -57,7 +59,7 @@ scripts/
   run_solomon_benchmark.py   # Reproduces data/solomon_results.md
   impact_report.py           # Reproduces data/impact_report.md
   measure_exact_vrp.py       # Exact-solver runtime by instance size
-  run_ablations.py           # Reproduces data/ablation_results.md (exact gap, jump-cap, local search)
+  run_ablations.py           # Reproduces data/ablation_results.md (exact gap, jump-cap, local search, QPSO vs PSO + LS)
   generate_stress_test_cache.py # Measures scalability -> data/stress_test_synthetic.json
   plot_benchmark_charts.py   # Repeated-trial and scalability figures + data/benchmark_charts.md
 
@@ -142,7 +144,8 @@ by the strength of its evidence:
 | QPSO + LS reaches the exact optimum on small instances | 47/60 runs at 6–9 customers; median gap ≤ 0.56% | Strong up to 8 customers; weaker at 9 |
 | Jump cap improves QPSO as dimension grows | Mean fitness halved at 60 customers, no effect at 20 | Moderate: 5 seeds, one instance per size |
 | QPSO + LS beats standard PSO, GA, SA at 20–60 customers | Lowest mean at every size; 14/15 paired wins over PSO | Strong at equal particles/iterations; unequal in time |
-| The gain comes from QPSO specifically | QPSO *alone* is worse than PSO at 40–60 | Not supported yet: needs a PSO + local search arm |
+| Local search improves swarm metaheuristics on CVRPTW | Improves both QPSO and standard PSO on 29/30 paired seeds at 20–60 customers | Strong |
+| The gain comes from QPSO specifically | With identical local search, PSO + LS matches QPSO + LS (5/11 wins on seeds where both are feasible; means within 6%) | Not supported |
 | Solomon benchmark | Feasible on 4/6; 12.5–34.7% above best-known distance | Moderate: one seed; objective is distance, not Solomon's hierarchy |
 | Scales to large instances | Times out at 100 customers (90 s) and 200 (300 s) | Not supported: runtime is the main limitation |
 | Time-dependent congestion-aware routing | 5.8% on one instance | Preliminary; see below |
