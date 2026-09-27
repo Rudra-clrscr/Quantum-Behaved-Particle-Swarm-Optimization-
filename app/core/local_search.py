@@ -148,6 +148,28 @@ LOCAL_SEARCH_INTERVAL = 15
 LOCAL_SEARCH_PASSES = 2
 
 
+class StagnationStop:
+    """
+    Early stop for a memetic run: stop once `patience` consecutive local-search
+    windows (the iterations since the previous call, plus the call itself) end
+    without a new global best. Checked only at refinement iterations. With
+    patience None it never stops, and the run goes to max_iter as before.
+    """
+
+    def __init__(self, patience: Optional[int]):
+        self.patience = patience
+        self.best = float("inf")
+        self.idle = 0
+
+    def should_stop(self, best_fit: float) -> bool:
+        if best_fit < self.best:
+            self.best = best_fit
+            self.idle = 0
+        else:
+            self.idle += 1
+        return self.patience is not None and self.idle >= self.patience
+
+
 def is_refinement_iteration(it: int, interval: int) -> bool:
     """Refine on every `interval`-th iteration, never on the first."""
     return it > 0 and it % interval == 0
