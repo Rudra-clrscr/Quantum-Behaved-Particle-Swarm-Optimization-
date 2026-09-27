@@ -59,14 +59,23 @@ def _run(task):
     import app.core.qpso_vrp as qpso_mod
     import app.core.vrp_problem as vp
 
-    # Count every objective evaluation, the swarm's and local search's alike.
-    # Both modules hold their own reference to evaluate_solution.
+    # Count every objective evaluation, the swarm's and local search's alike:
+    # calls of evaluate_solution (both modules hold their own reference to it),
+    # plus local search's candidate scoring through RouteCosts.fitness, each of
+    # which ranks one complete candidate solution.
     counter = {"evals": 0, "ls_calls": 0}
     real_eval, real_refine = vp.evaluate_solution, ls.refine_best
+    real_fitness = ls.RouteCosts.fitness
 
     def counted_eval(*a, **k):
         counter["evals"] += 1
         return real_eval(*a, **k)
+
+    def counted_fitness(self, *a, **k):
+        counter["evals"] += 1
+        return real_fitness(self, *a, **k)
+
+    ls.RouteCosts.fitness = counted_fitness
 
     def counted_refine(*a, **k):
         counter["ls_calls"] += 1
