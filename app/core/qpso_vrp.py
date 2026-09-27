@@ -17,7 +17,7 @@ from typing import List, Optional
 
 from app.core.vrp_problem import VRPProblem, evaluate_chromosome, VRPSolution
 from app.core.local_search import (
-    LOCAL_SEARCH_INTERVAL, LOCAL_SEARCH_PASSES,
+    LOCAL_SEARCH_INTERVAL, LOCAL_SEARCH_PASSES, StagnationStop,
     is_refinement_iteration, refine_best, reinject_into_worst,
 )
 
@@ -45,6 +45,7 @@ class QPSOVRPOptimizer:
         use_local_search: bool = True,
         local_search_interval: int = LOCAL_SEARCH_INTERVAL,
         local_search_passes: int = LOCAL_SEARCH_PASSES,
+        stagnation_patience: Optional[int] = None,
     ):
         self.problem = problem
         self.n_particles = n_particles
@@ -73,6 +74,9 @@ class QPSOVRPOptimizer:
         self.use_local_search = use_local_search
         self.local_search_interval = local_search_interval
         self.local_search_passes = local_search_passes
+        # Stop once this many local-search windows in a row bring no new global
+        # best (see local_search.StagnationStop). None runs to max_iter.
+        self.stagnation_patience = stagnation_patience
         self._n_eval = 0
 
     def _bounded_jump(self, u: np.ndarray) -> np.ndarray:
@@ -108,6 +112,8 @@ class QPSOVRPOptimizer:
         gbest_sol: Optional[VRPSolution] = None
 
         convergence_curve = []
+
+        stagnation = StagnationStop(self.stagnation_patience)
 
         for it in range(self.max_iter):
             fitnesses = np.zeros(n)
@@ -155,6 +161,9 @@ class QPSOVRPOptimizer:
                     pbest_sol[worst_idx] = gbest_sol
 
                     convergence_curve[-1] = gbest_fit  # reflect the refinement in this iteration's record
+
+                if stagnation.should_stop(gbest_fit):
+                    break
 
             if verbose and (it % 20 == 0 or it == self.max_iter - 1):
                 print(f"Iter {it:4d} | gbest_fitness={gbest_fit:.3f} | feasible={gbest_sol.feasible if gbest_sol else None}")

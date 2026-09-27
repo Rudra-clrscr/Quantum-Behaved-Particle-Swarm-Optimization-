@@ -19,7 +19,7 @@ from typing import List, Optional
 
 from app.core.vrp_problem import VRPProblem, evaluate_chromosome, VRPSolution
 from app.core.local_search import (
-    LOCAL_SEARCH_INTERVAL, LOCAL_SEARCH_PASSES,
+    LOCAL_SEARCH_INTERVAL, LOCAL_SEARCH_PASSES, StagnationStop,
     is_refinement_iteration, refine_best, reinject_into_worst,
 )
 
@@ -160,6 +160,7 @@ def run_standard_pso_vrp(
     use_local_search: bool = False,
     local_search_interval: int = LOCAL_SEARCH_INTERVAL,
     local_search_passes: int = LOCAL_SEARCH_PASSES,
+    stagnation_patience: Optional[int] = None,
 ) -> VRPBenchmarkResult:
     """
     Standard PSO. With `use_local_search=True` it becomes "PSO + LS": the same
@@ -169,6 +170,9 @@ def run_standard_pso_vrp(
     A reinjected particle keeps its velocity. Only position and personal best
     are overwritten, exactly as in QPSO, which has no velocity to reset; zeroing
     it here would add a mechanism QPSO + LS does not have.
+
+    `stagnation_patience` stops the run early, exactly as in QPSO
+    (local_search.StagnationStop). None runs to max_iter.
     """
     rng = np.random.default_rng(seed)
     d = len(problem.customers)
@@ -188,6 +192,7 @@ def run_standard_pso_vrp(
     gbest, gbest_fit, gbest_sol = None, np.inf, None
 
     convergence_curve = []
+    stagnation = StagnationStop(stagnation_patience)
     for it in range(max_iter):
         for i in range(n_particles):
             sol = eval_pos(positions[i])
@@ -208,13 +213,16 @@ def run_standard_pso_vrp(
         convergence_curve.append(gbest_fit)
 
         # Memetic step, identical to QPSO's (see local_search.py).
-        if use_local_search and gbest_sol is not None and            is_refinement_iteration(it, local_search_interval):
+        if use_local_search and gbest_sol is not None and \
+           is_refinement_iteration(it, local_search_interval):
             refined = refine_best(problem, gbest_sol, gbest_fit, local_search_passes)
             if refined is not None:
                 gbest_sol, gbest = refined
                 gbest_fit = gbest_sol.fitness
                 reinject_into_worst(positions, pbest, pbest_fit, gbest, gbest_fit)
                 convergence_curve[-1] = gbest_fit
+            if stagnation.should_stop(gbest_fit):
+                break
 
     if use_local_search and gbest_sol is not None:
         refined = refine_best(problem, gbest_sol, gbest_fit, local_search_passes + 1)

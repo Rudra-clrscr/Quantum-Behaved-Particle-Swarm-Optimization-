@@ -40,8 +40,8 @@ OUT_PATH = os.path.join("data", "stress_test_synthetic.json")
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--sizes", type=int, nargs="+", default=[20, 40, 60, 80, 100],
-                        help="Customer counts to measure (default: 20 40 60 80 100)")
+    parser.add_argument("--sizes", type=int, nargs="+", default=[20, 40, 60, 80, 100, 150, 200],
+                        help="Customer counts to measure (default: 20 40 60 80 100 150 200)")
     parser.add_argument("--seeds", type=int, default=3,
                         help="Runs per (size, algorithm); the best is kept (default: 3)")
     parser.add_argument("--budget", type=float, default=90.0,

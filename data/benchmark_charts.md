@@ -10,30 +10,34 @@ Instance: synthetic 40-node city graph (seed 7), 18 customers (seed 3), vehicle 
 
 | Algorithm | Trials | Fitness median | Fitness min | Fitness max | Fitness mean ± std | Runtime median (s) | Feasible | Success |
 |---|---|---|---|---|---|---|---|---|
-| QPSO + LS | 10 | 562.1 | 551.1 | 607.9 | 567.6 ± 17.6 | 2.22 | 90% | 70% |
-| Standard PSO | 10 | 640.6 | 570.7 | 722.0 | 633.3 ± 42.6 | 2.01 | 100% | 20% |
-| GA | 10 | 675.5 | 658.5 | 703.2 | 675.7 ± 13.8 | 2.71 | 90% | 0% |
-| SA | 10 | 770.8 | 693.7 | 895.8 | 786.7 ± 62.1 | 0.98 | 60% | 0% |
+| QPSO + LS | 10 | 562.1 | 551.1 | 607.9 | 567.6 ± 17.6 | 1.33 | 90% | 70% |
+| Standard PSO | 10 | 640.6 | 570.7 | 722.0 | 633.3 ± 42.6 | 1.16 | 100% | 20% |
+| GA | 10 | 675.5 | 658.5 | 703.2 | 675.7 ± 13.8 | 1.30 | 90% | 0% |
+| SA | 10 | 770.8 | 693.7 | 895.8 | 786.7 ± 62.1 | 0.48 | 60% | 0% |
 | Greedy NN | 10 | 630.8 | 630.8 | 630.8 | 630.8 ± 0.0 | 0.00 | 100% | 0% |
 
 Figures: `trials_quality.png`, `trials_runtime.png`, `trials_rates.png`, `trials_time_vs_distance.png`.
 
 ## Scalability: `stress_test_synthetic.json`
 
-Network: `synthetic`. Generated 2026-09-25T08:18:36Z. Best of 3 seeds per point, 90s budget per run.
+Network: `synthetic`. Generated 2026-09-27T08:42:34Z. Best of 3 seeds per point, 90s budget per run.
 
 | Customers | Algorithm | Runtime (s) | Fitness | Feasible |
 |---|---|---|---|---|
-| 20 | QPSO + local search | 3.2 | 455.8 | yes |
-| 20 | Standard PSO | 1.6 | 530.5 | yes |
-| 40 | QPSO + local search | 16.1 | 902.5 | yes |
-| 40 | Standard PSO | 3.7 | 1285.3 | no |
-| 60 | QPSO + local search | 33.5 | 1395.6 | yes |
-| 60 | Standard PSO | 7.4 | 2017.2 | yes |
-| 80 | QPSO + local search | 87.3 | 1921.5 | no |
-| 80 | Standard PSO | 9.8 | 2829.0 | no |
-| 100 | QPSO + local search | timeout | — | — |
-| 100 | Standard PSO | 8.8 | 4486.1 | no |
+| 20 | QPSO + local search | 1.0 | 455.8 | yes |
+| 20 | Standard PSO | 0.9 | 530.5 | yes |
+| 40 | QPSO + local search | 3.6 | 902.5 | yes |
+| 40 | Standard PSO | 1.6 | 1285.3 | no |
+| 60 | QPSO + local search | 4.4 | 1395.6 | yes |
+| 60 | Standard PSO | 2.7 | 2017.2 | yes |
+| 80 | QPSO + local search | 6.3 | 1921.5 | no |
+| 80 | Standard PSO | 3.2 | 2829.0 | no |
+| 100 | QPSO + local search | 9.8 | 2220.0 | yes |
+| 100 | Standard PSO | 4.4 | 4486.1 | no |
+| 150 | QPSO + local search | 18.1 | 3259.4 | yes |
+| 150 | Standard PSO | 6.5 | 11557.5 | no |
+| 200 | QPSO + local search | 29.8 | 4244.2 | yes |
+| 200 | Standard PSO | 9.1 | 37442.8 | no |
 
 Figure: `scalability_synthetic.png`.
 
