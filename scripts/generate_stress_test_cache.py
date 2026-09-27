@@ -19,10 +19,18 @@ chart drawn from it can state exactly what was run.
     python scripts/generate_stress_test_cache.py
     python scripts/generate_stress_test_cache.py --sizes 20 40 60 --seeds 5
 
-The committed data/stress_test_delhi.json is a separate measurement (100 and 200
-customers on a locked New Delhi OpenStreetMap extract) made with the upstream
-application's OSM loader, which is not part of this repository. This script
-writes to a different file by default so it can never overwrite it.
+The New Delhi measurement runs on the OpenStreetMap extract frozen in
+data/networks/delhi_osm.json (scripts/freeze_osm_network.py), with the same
+sizes, seeds and budget as the original upstream measurement, which is kept as
+data/stress_test_delhi_2026-09-16.json:
+
+    python scripts/generate_stress_test_cache.py --network data/networks/delhi_osm.json \
+        --sizes 100 200 --budget 300 --out data/stress_test_delhi.json \
+        --algorithms qpso_local_search qpso_local_search_reference standard_pso
+
+"qpso_local_search_reference" is QPSO + LS with the previous local-search
+implementation (app/core/local_search_reference.py): the same moves, so the
+same result, with the old runtime.
 """
 
 import argparse
@@ -47,18 +55,22 @@ def main() -> int:
     parser.add_argument("--budget", type=float, default=90.0,
                         help="Seconds before a single run is called a timeout (default: 90)")
     parser.add_argument("--out", default=OUT_PATH, help=f"Output path (default: {OUT_PATH})")
+    parser.add_argument("--network", default="synthetic",
+                        help="'synthetic', or the path of a frozen network JSON (default: synthetic)")
+    parser.add_argument("--algorithms", nargs="+", default=["qpso_local_search", "standard_pso"],
+                        help="Any of qpso_local_search, qpso_local_search_reference, standard_pso")
     args = parser.parse_args()
 
-    algorithms = ["qpso_local_search", "standard_pso"]
+    algorithms = args.algorithms
 
     print(f"Measuring scalability: sizes={args.sizes}, seeds={args.seeds}, "
-          f"network=synthetic, budget={args.budget}s")
+          f"network={args.network}, budget={args.budget}s")
     print(f"{len(args.sizes) * len(algorithms) * args.seeds} runs in total.\n")
 
     results = run_stress_test_at_scale(
         n_customers_list=args.sizes,
         algorithms=algorithms,
-        network_source="synthetic",
+        network_source=args.network,
         time_budget_seconds=args.budget,
         n_seeds=args.seeds,
     )
@@ -68,10 +80,13 @@ def main() -> int:
         "algorithms": algorithms,
         "seeds_per_point": args.seeds,
         "time_budget_seconds": args.budget,
-        "network_source": "synthetic",
+        "network_source": args.network,
         "note": "Runtime and fitness are measured, not extrapolated. Each point "
                 "is the best of `seeds_per_point` runs at that size.",
     }
+    if args.network != "synthetic":
+        with open(args.network) as f:
+            results["measurement"]["network_metadata"] = json.load(f).get("metadata", {})
 
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
     with open(args.out, "w") as f:

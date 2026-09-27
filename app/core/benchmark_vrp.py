@@ -222,11 +222,22 @@ def run_robustness_check(problem: VRPProblem, n_seeds: int = 5, max_iter: int = 
 
 
 import multiprocessing
+import os
 import traceback
 
 def _worker_solve(problem, algorithm, seed, out_q):
     try:
         t0 = time.perf_counter()
+        if algorithm == "qpso_local_search_reference":
+            # The same run with the previous local-search passes, which score every
+            # candidate move with a full evaluate_solution call. They make the same
+            # moves (tests/test_route_costs.py), so this differs only in runtime:
+            # a before/after on one machine and one instance. This is a fresh
+            # spawned process, so patching the module affects this run alone.
+            import app.core.local_search as ls
+            from app.core.local_search_reference import reference_or_opt_pass, reference_two_opt_pass
+            ls.two_opt_pass, ls.or_opt_pass = reference_two_opt_pass, reference_or_opt_pass
+            algorithm = "qpso_local_search"
         if algorithm == "qpso_local_search":
             opt = QPSOVRPOptimizer(problem, n_particles=50, max_iter=200, seed=seed, use_local_search=True)
             res = opt.optimize()
@@ -266,17 +277,18 @@ def run_stress_test_at_scale(
     time_budget_seconds: float = 300.0,
     n_seeds: int = 3,
 ) -> dict:
-    # Only the synthetic graph is available here: the OpenStreetMap loader that
-    # produced data/stress_test_delhi.json lives in the upstream application,
-    # not in this research artifact.
-    if network_source != "synthetic":
-        raise ValueError(
-            f"network_source={network_source!r} is not available in this repository; "
-            "only 'synthetic' is. The Delhi measurements in "
-            "data/stress_test_delhi.json came from the upstream application's OSM loader."
-        )
-    net = generate_synthetic_city_graph(n_nodes=300, seed=1)
-    actual_network_id = network_id or "synthetic"
+    """
+    network_source is "synthetic" (a 300-node generated graph) or the path of a
+    network frozen with app.core.graph_model.save_network -- for example the New
+    Delhi OpenStreetMap extract written by scripts/freeze_osm_network.py.
+    """
+    if network_source == "synthetic":
+        net = generate_synthetic_city_graph(n_nodes=300, seed=1)
+        actual_network_id = network_id or "synthetic"
+    else:
+        from app.core.graph_model import load_network
+        net = load_network(network_source)
+        actual_network_id = network_id or os.path.splitext(os.path.basename(network_source))[0]
         
     results = {}
     

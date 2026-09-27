@@ -389,6 +389,41 @@ def generate_synthetic_city_graph(
     return net
 
 
+# ---------------------------------------------------------------------------
+# Freezing a network to disk
+# ---------------------------------------------------------------------------
+# A real road network downloaded from OpenStreetMap changes whenever OSM does,
+# so a measurement made on one cannot be repeated later unless the network
+# itself is kept. These write and read the network exactly: nodes and edges in
+# their original order (customer sampling and shortest-path tie-breaking depend
+# on it) and every edge attribute as stored, congestion included. JSON writes
+# floats with round-trip precision, so nothing is rounded.
+
+def save_network(net: TrafficNetwork, path: str, metadata: Optional[dict] = None) -> None:
+    import json
+    data = {
+        "metadata": metadata or {},
+        "nodes": [[n, d["x"], d["y"]] for n, d in net.graph.nodes(data=True)],
+        "edges": [[u, v, d["distance"], d["base_time"], d["congestion_factor"]]
+                  for u, v, d in net.graph.edges(data=True)],
+    }
+    with open(path, "w") as f:
+        json.dump(data, f)
+
+
+def load_network(path: str) -> TrafficNetwork:
+    import json
+    with open(path) as f:
+        data = json.load(f)
+    net = TrafficNetwork()
+    for n, x, y in data["nodes"]:
+        net.graph.add_node(n, x=x, y=y)
+    for u, v, distance, base_time, congestion in data["edges"]:
+        net.graph.add_edge(u, v, distance=distance, base_time=base_time,
+                           congestion_factor=congestion)
+    return net
+
+
 if __name__ == "__main__":
     # quick smoke test
     net = generate_synthetic_city_graph(n_nodes=15, seed=1)

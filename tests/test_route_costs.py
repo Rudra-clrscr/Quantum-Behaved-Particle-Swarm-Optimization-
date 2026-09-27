@@ -9,13 +9,11 @@ solution. That is only acceptable if it changes nothing but speed, so:
      time windows, capacity, time-dependent travel, a mixed fleet, forced use
      of every vehicle -- to far inside the 1e-9 acceptance margin; and
   2. the 2-opt and or-opt passes make exactly the moves the previous
-     implementation made. The previous implementation is kept below, verbatim,
-     as the oracle.
+     implementation made. The previous implementation is kept verbatim in
+     app/core/local_search_reference.py as the oracle.
 """
 
 from __future__ import annotations
-
-import copy
 
 import numpy as np
 import pytest
@@ -24,64 +22,8 @@ from app.core.graph_model import generate_synthetic_city_graph
 from app.core.local_search import (
     RouteCosts, local_search_refine, or_opt_pass, two_opt_pass,
 )
+from app.core.local_search_reference import reference_or_opt_pass, reference_two_opt_pass
 from app.core.vrp_problem import decode_chromosome, evaluate_solution, generate_synthetic_vrp
-
-
-# ---------------------------------------------------------------------------
-# The previous passes, verbatim: every candidate scored by evaluate_solution
-# ---------------------------------------------------------------------------
-def _reference_two_opt_pass(problem, routes):
-    routes = copy.deepcopy(routes)
-    base_fit = evaluate_solution(problem, routes).fitness
-    for r_idx, route in enumerate(routes):
-        n = len(route)
-        if n < 3:
-            continue
-        improved = True
-        while improved:
-            improved = False
-            for i in range(n - 1):
-                for j in range(i + 1, n):
-                    candidate = route[:i] + route[i:j + 1][::-1] + route[j + 1:]
-                    trial_routes = routes[:r_idx] + [candidate] + routes[r_idx + 1:]
-                    fit = evaluate_solution(problem, trial_routes).fitness
-                    if fit < base_fit - 1e-9:
-                        route = candidate
-                        base_fit = fit
-                        improved = True
-            routes[r_idx] = route
-    return routes
-
-
-def _reference_or_opt_pass(problem, routes):
-    routes = copy.deepcopy(routes)
-    base_fit = evaluate_solution(problem, routes).fitness
-    for customer in [c.node_id for c in problem.customers]:
-        src_idx, pos = None, None
-        for r_idx, route in enumerate(routes):
-            if customer in route:
-                src_idx, pos = r_idx, route.index(customer)
-                break
-        if src_idx is None:
-            continue
-        src_route = routes[src_idx]
-        without = src_route[:pos] + src_route[pos + 1:]
-        best_fit, best_routes = base_fit, None
-        for dst_idx, dst_route in enumerate(routes):
-            candidate_dst = dst_route if dst_idx != src_idx else without
-            for insert_at in range(len(candidate_dst) + 1):
-                new_dst = candidate_dst[:insert_at] + [customer] + candidate_dst[insert_at:]
-                trial = [r[:] for r in routes]
-                trial[src_idx] = without
-                trial[dst_idx] = new_dst
-                if src_idx == dst_idx:
-                    trial[src_idx] = new_dst
-                fit = evaluate_solution(problem, trial).fitness
-                if fit < best_fit - 1e-9:
-                    best_fit, best_routes = fit, trial
-        if best_routes is not None:
-            routes, base_fit = best_routes, best_fit
-    return routes
 
 
 # ---------------------------------------------------------------------------
@@ -131,8 +73,8 @@ def test_passes_make_exactly_the_reference_moves(kind):
     rng = np.random.default_rng(1)
     for _ in range(6):
         start = _random_routes(problem, rng)
-        assert two_opt_pass(problem, start) == _reference_two_opt_pass(problem, start)
-        assert or_opt_pass(problem, start) == _reference_or_opt_pass(problem, start)
+        assert two_opt_pass(problem, start) == reference_two_opt_pass(problem, start)
+        assert or_opt_pass(problem, start) == reference_or_opt_pass(problem, start)
 
 
 def test_a_customer_moved_out_of_a_single_stop_route_empties_it():
@@ -142,7 +84,7 @@ def test_a_customer_moved_out_of_a_single_stop_route_empties_it():
     for _ in range(10):
         start = _random_routes(problem, rng)
         if any(len(r) == 1 for r in start):
-            assert or_opt_pass(problem, start) == _reference_or_opt_pass(problem, start)
+            assert or_opt_pass(problem, start) == reference_or_opt_pass(problem, start)
 
 
 def test_refine_keeps_every_customer_exactly_once():
