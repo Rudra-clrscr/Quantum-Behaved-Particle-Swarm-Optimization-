@@ -10,7 +10,7 @@ This section reports every experiment in the repository in a form ready to go in
 
 **Instances.** Synthetic city graphs and customer sets generated from fixed seeds, vehicle capacity 80, objective weights $w_T = 0.6$, $w_D = 0.4$. Six Solomon (1987) 100-customer instances (C101, C201, R101, R201, RC101, RC201), scored on distance alone ($w_T = 0$, $w_D = 1$). One locked New Delhi OpenStreetMap extract, used for scalability only.
 
-**Hardware.** The ablations and the swarm-contribution measurement (§2–4, `data/ablation_results.md`, `data/swarm_contribution.md`) were last generated on an AMD Ryzen 7 7445HS (6 cores / 12 threads, 32 GB RAM) under Windows 11, Python 3.14.5, NumPy 2.4.6, NetworkX 3.6.1. They were first generated on an AMD Ryzen 5 7520U (4 cores / 8 threads, 8 GB RAM), Python 3.12.10, NumPy 2.5.3, NetworkX 3.7; every run common to the two machines reproduced bit for bit, with the same fitness and feasibility, and only runtimes differ. The repeated trials (§4) and the synthetic scalability runs (§6) come from the Ryzen 5 machine. The Solomon results (§5) and the Delhi scalability run (§6) were produced earlier, on different machines. Compare runtimes within a table, not across tables.
+**Hardware.** The ablations and the swarm-contribution measurement (§2–4, `data/ablation_results.md`, `data/swarm_contribution.md`) were last generated on an AMD Ryzen 7 7445HS (6 cores / 12 threads, 32 GB RAM) under Windows 11, Python 3.14.5, NumPy 2.4.6, NetworkX 3.6.1. They were first generated on an AMD Ryzen 5 7520U (4 cores / 8 threads, 8 GB RAM), Python 3.12.10, NumPy 2.5.3, NetworkX 3.7; every run common to the two machines reproduced bit for bit, with the same fitness and feasibility, and only runtimes differ. The repeated trials (§4), the synthetic scalability runs and the budget experiment (§6) were also generated on the Ryzen 7 machine. The Solomon results (§5) were regenerated on it as well: every figure except runtime reproduced exactly. The Delhi scalability run (§6) was produced earlier, on a different machine and with the earlier local-search implementation. Compare runtimes within a table, not across tables.
 
 ## 2. Optimality on small instances
 
@@ -93,7 +93,7 @@ However, **QPSO alone is worse than standard PSO from 40 customers up**, both in
 
 **With the same local search, QPSO + LS and PSO + LS are indistinguishable at 20–100 customers.** On the 20 seeds where both runs are feasible, QPSO + LS is better on 9, worse on 10 and tied on 1. The two are feasible in 23 and 22 of 25 runs. The difference in feasible means is under 6% at every size and at most 2.4% from 60 customers up, and its sign changes with size. PSO + LS wins 4 of 5 paired seeds at 40 customers, where both arms are always feasible. At 60 customers QPSO + LS scores lower on the penalised objective in 4 of 5 seeds, but two of those four runs break time windows while PSO + LS's do not. At 80 customers the two reach the identical solution on one seed. No QPSO-specific advantage appears at the larger sizes where the jump cap matters (§3).
 
-Local search improves QPSO on 24 of 25 paired seeds and PSO on 25 of 25. Without it, PSO beats QPSO from 40 customers up; with it, the two are level. The gains of QPSO + LS over standard PSO in the first table (11.5–80.6%) are therefore explained by local search. Their runtimes are similar too: at 100 customers the median is 66.0 s for QPSO + LS and 60.5 s for PSO + LS.
+Local search improves QPSO on 24 of 25 paired seeds and PSO on 25 of 25. Without it, PSO beats QPSO from 40 customers up; with it, the two are level. The gains of QPSO + LS over standard PSO in the first table (11.5–80.6%) are therefore explained by local search. Their runtimes are similar too: at 100 customers the median is 9.8 s for QPSO + LS and 10.2 s for PSO + LS.
 
 **Why the base swarm does not matter: it stops contributing once local search starts.** *Source: `data/swarm_contribution.md` — `python scripts/measure_swarm_contribution.py`.* Every memetic call was logged with the best fitness going in and coming out, on the same runs. Each run's total improvement then splits exactly into three parts: what the swarm found before the first call at iteration 15, what local search added, and what the swarm added between calls afterwards.
 
@@ -136,29 +136,48 @@ The pattern is the same: QPSO + LS has the lowest median, and 7 of its 10 runs l
 | RC101 | 14 / 1696.95 | infeasible (20 vehicles) | — | +59.77% |
 | RC201 | 4 / 1406.94 | 14 / 1655.55 | +17.67% | +75.43% |
 
-QPSO + LS finds a feasible solution on 4 of the 6 instances. On those it is 12.5–34.7% above the best-known distance, and it is infeasible on R101 and RC101. GA, SA and standard PSO are infeasible on all six. Greedy NN is feasible on all six but 58.5–219.2% above the best-known distance. QPSO + LS takes 58.7–74.4 s per instance; each baseline takes under 5 s.
+QPSO + LS finds a feasible solution on 4 of the 6 instances. On those it is 12.5–34.7% above the best-known distance, and it is infeasible on R101 and RC101. GA, SA and standard PSO are infeasible on all six. Greedy NN is feasible on all six but 58.5–219.2% above the best-known distance. QPSO + LS takes 8.6–13.5 s per instance; each baseline takes under 5 s.
 
 Two caveats apply. First, this is one seed per algorithm, not the repeated-seed protocol of §2–4. Second, Solomon's best-known solutions minimise vehicles first and distance second, whereas our objective is distance alone. QPSO + LS uses 4–10 more vehicles than the best-known solution, so the gaps are a reference point, not an optimality gap in the sense of §2.
 
 ## 6. Scalability and runtime cost
 
-*Sources: `data/stress_test_synthetic.json`, `data/stress_test_delhi.json`; figures `data/scalability_synthetic.png`, `data/scalability_delhi.png`; tables in `data/benchmark_charts.md`.*
+*Sources: `data/stress_test_synthetic.json`, `data/stress_test_delhi.json`; figures `data/scalability_synthetic.png`, `data/scalability_delhi.png`; tables in `data/benchmark_charts.md`; `data/budget_results.md` — `python scripts/run_budget_ablation.py`.*
 
-Each point is the best of 3 seeds. Runtimes are measured one process at a time, not extrapolated. A run that exceeds the budget is reported as a timeout.
+**Where the time goes.** Local search makes about 95% of all objective evaluations in a QPSO + LS run. At 100 customers that is 146,000 of 154,000 (`data/budget_results.md`). Each evaluation used to re-walk every route of the solution, although a 2-opt move changes one route and a relocation at most two. Local search now keeps each route's cost and re-walks only the routes a move changes (`RouteCosts` in `app/core/local_search.py`). A changed route is still walked in full with travel priced at the departure clock, so time-dependent travel and downstream time windows are handled exactly as before.
 
-**Synthetic 300-node graph, 90 s budget per run:**
+The change affects speed only. `tests/test_route_costs.py` keeps the previous implementation as an oracle and requires the same moves on instances that exercise every term of the objective. We also regenerated every experiment in this document with it. All 72 exact-comparison runs and 175 ablation runs, the 50 swarm-contribution runs, the 250 budget runs and the 50 repeated trials reproduced their fitness and feasibility bit for bit. The budget runs also reproduced their evaluation counts exactly. On the same machine, one local-search call at 100 customers is 12.1× faster, and the budget experiment as a whole runs 6.0× faster.
+
+**Synthetic 300-node graph, 90 s budget per run.** Each point is the best of 3 seeds, measured one process at a time, not extrapolated. A run over budget is reported as a timeout.
 
 | Customers | QPSO + LS: time / fitness | Standard PSO: time / fitness | Runtime ratio |
 |---|---|---|---|
-| 20 | 3.2 s / 455.8 | 1.6 s / 530.5 | 2.0× |
-| 40 | 16.1 s / 902.5 | 3.7 s / 1285.3 (infeasible) | 4.3× |
-| 60 | 33.5 s / 1395.6 | 7.4 s / 2017.2 | 4.5× |
-| 80 | 87.3 s / 1921.5 (infeasible) | 9.8 s / 2829.0 (infeasible) | 8.9× |
-| 100 | timeout (all 3 seeds) | 8.8 s / 4486.1 (infeasible) | — |
+| 20 | 1.0 s / 455.8 | 0.9 s / 530.5 | 1.1× |
+| 40 | 3.6 s / 902.5 | 1.6 s / 1285.3 (infeasible) | 2.2× |
+| 60 | 4.4 s / 1395.6 | 2.7 s / 2017.2 | 1.6× |
+| 80 | 6.3 s / 1921.5 (infeasible) | 3.2 s / 2829.0 (infeasible) | 2.0× |
+| 100 | 9.8 s / 2220.0 | 4.4 s / 4486.1 (infeasible) | 2.2× |
+| 150 | 18.1 s / 3259.4 | 6.5 s / 11557.5 (infeasible) | 2.8× |
+| 200 | 29.8 s / 4244.2 | 9.1 s / 37442.8 (infeasible) | 3.3× |
 
-**New Delhi OSM extract, 300 s budget per run:** at 100 customers, QPSO + LS took 40.7 s for fitness 1693.4 (feasible), against 2.6 s and 3858.1 (infeasible) for standard PSO. At 200 customers, QPSO + LS did not finish; standard PSO finished in 14.4 s with an infeasible solution (23218.7).
+QPSO + LS now finishes every size up to 200 customers within the budget, with a feasible solution at 100, 150 and 200. Standard PSO is faster but infeasible at 80 customers and above. Previously QPSO + LS timed out at 100 customers. Where both the old and the new run finished (20–80 customers), the fitness values are identical. The old measurement was made on the slower Ryzen 5 machine, so the size of the before-and-after speed-up in this table mixes code and hardware. The same-machine figure above (6.0×) is the one attributable to the change.
 
-Better solutions come at a large runtime cost that grows with instance size. The cost comes mostly from local search, whose operators re-evaluate the full objective for every candidate move: in the ablation (§4), median runtime at 60 customers is 3.0 s for QPSO alone and 17.9 s with local search, and 2.7 s against 16.9 s for standard PSO; at 100 customers it is 4.6 s against 66.0 s for QPSO. Because of it, QPSO + LS in its current Python implementation is not practical beyond about 80 customers under a 90 s budget on the machine and 300-node graph above. The ablation did finish 100 customers (on a 150-node graph and the faster machine in §1, with runs sharing the CPU), so this limit depends on hardware and graph size. The figures in this section are the ones measured under a fixed budget.
+**New Delhi OSM extract, 300 s budget per run.** This measurement predates the change and has not been repeated, because the OSM loader it needs is not in this repository. At 100 customers, QPSO + LS took 40.7 s for fitness 1693.4 (feasible), against 2.6 s and 3858.1 (infeasible) for standard PSO. At 200 customers, QPSO + LS did not finish; standard PSO finished in 14.4 s with an infeasible solution (23218.7).
+
+**Iteration budget and early stopping.** §4 showed that the swarm stops contributing after the first local-search call, so most of the 150-iteration budget should be unnecessary. QPSO + LS and PSO + LS were run on the ablation instances and seeds with fixed budgets of 30, 45 and 60 iterations. They were also run with early stopping: stop once two consecutive local-search windows bring no new global best. Each run was compared with the 150-iteration run on the same seed.
+
+| Algorithm | Budget | Within 1% of 150 it. | Worst Δ | Feasible | Runtime vs 150 it. |
+|---|---|---|---|---|---|
+| QPSO + LS | 30 it. | 16/25 | +22.3% | 20/25 | 31% |
+| QPSO + LS | 60 it. | 18/25 | +12.6% | 22/25 | 48% |
+| QPSO + LS | early stop | 25/25 | +0.7% | 23/25 | 54% |
+| PSO + LS | 30 it. | 22/25 | +5.3% | 22/25 | 29% |
+| PSO + LS | 60 it. | 23/25 | +5.3% | 22/25 | 48% |
+| PSO + LS | early stop | 23/25 | +5.3% | 22/25 | 56% |
+
+*Pooled over 20–100 customers, 5 seeds each; the 150-iteration arms are feasible in 23/25 (QPSO + LS) and 22/25 (PSO + LS).*
+
+Early stopping keeps QPSO + LS within 1% of the full run on every seed, with a worst case of +0.7% and the same feasibility, at 54% of the runtime. Fixed short budgets save more time but are not safe for QPSO: the worst case is +12.6% to +22.3%, and feasibility drops. QPSO's α anneals over `max_iter`, so a shorter budget also changes its first 15 iterations. It is not a truncation of the full run, and some short runs even come out better than it. For PSO, whose parameters are fixed, a short budget is a pure truncation. Two PSO + LS seeds keep improving after two idle local-search windows, which accounts for its +5.3% worst case under early stopping. Runtime falls much less than the iteration count, because every local-search call scans every move even when it finds none. Early stopping is not used anywhere else in this document; every other result runs the full budget.
 
 ## 7. Time-dependent congestion (preliminary)
 
@@ -170,8 +189,8 @@ With the time-of-day congestion curve enabled, the same route leg costs 35 min o
 
 - **Attribution of the gain.** With identical local search, standard PSO matches QPSO at 20–100 customers, and removing the jump cap from QPSO + LS changes nothing measurable (§3–4). The measured gain over the baselines comes from local search. After the first local-search call, the swarm contributes almost nothing (§4).
 - **Missing control: local search without a swarm.** No arm replaces the swarm with plain random sampling, or with local search from a random or greedy start. Such an arm would show how much of the result the first 15 swarm iterations actually buy. Until it is run, the evidence does not show that the swarm is needed at all.
-- **Algorithm design.** The swarm iterations after the first local-search call (about 90% of each run) do not improve the result in the current design (§4). That is a weakness of the method as implemented, not only of the evaluation. Any claim about QPSO's search behaviour in the memetic setting needs a design in which the swarm keeps contributing.
-- **Unequal effort.** Budgets match in particles and iterations, but QPSO + LS spends extra fitness evaluations and 2–9× the wall-clock time (§6). A comparison at equal evaluations or equal time has not been run.
+- **Algorithm design.** The swarm iterations after the first local-search call (about 90% of each run) do not improve the result in the current design (§4). That is a weakness of the method as implemented, not only of the evaluation. Any claim about QPSO's search behaviour in the memetic setting needs a design in which the swarm keeps contributing. Early stopping recovers much of the wasted time (§6), but it does not make the swarm contribute.
+- **Unequal effort.** Budgets match in particles and iterations, but QPSO + LS makes 1.8–20× the objective evaluations of the swarm alone (from 20 to 100 customers) and takes 1.1–3.3× standard PSO's wall-clock time (§6). A comparison at equal evaluations or equal time has not been run.
 - **Sample size.** The ablations use five seeds on one instance per size; Solomon uses one seed. No significance tests are reported; paired win counts and standard deviations are given instead.
 - **Tuning.** The jump-cap constants were tuned on the same family of synthetic instances they are evaluated on.
 - **Instances.** The synthetic graphs and the congestion curve are generated, not measured. No live traffic data is used (FORMULATION.md §1).
@@ -189,5 +208,6 @@ With the time-of-day congestion curve enabled, the same route leg costs 35 min o
 | The gain comes from QPSO specifically | PSO + LS matches QPSO + LS: 9 better / 10 worse / 1 tied on both-feasible seeds, means within 6% (§4) | **Not supported**: the same local search on PSO does as well |
 | The swarm keeps improving the solution in the memetic phase | Improved the best in 4 of 450 windows after iteration 15 (§4) | **Not supported**: local search does the work |
 | Competitive on Solomon | Feasible on 4/6, 12.5–34.7% above best-known distance (§5) | Moderate: one seed; objective differs from Solomon's |
-| Scales to large instances | Timeout at 100 (synthetic, 90 s) and 200 (Delhi, 300 s) (§6) | **Not supported**: runtime is the main limitation |
+| Scales to large instances | Feasible at 100, 150 and 200 customers in 9.8–29.8 s on the synthetic graph (§6) | Moderate: one graph, best of 3 seeds; the Delhi extract, where 200 failed, has not been re-run |
+| Early stopping keeps quality at lower cost | QPSO + LS within 1% of the full run on 25/25 seeds at 54% of the runtime (§6) | Moderate: 5 seeds, one instance per size |
 | Time-dependent routing helps | 5.8% on one instance (§7) | Preliminary |
