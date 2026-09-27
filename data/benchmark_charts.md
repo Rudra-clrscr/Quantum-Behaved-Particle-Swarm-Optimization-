@@ -18,6 +18,7 @@ Instance: synthetic 40-node city graph (seed 7), 18 customers (seed 3), vehicle 
 
 Figures: `trials_quality.png`, `trials_runtime.png`, `trials_rates.png`, `trials_time_vs_distance.png`.
 
+
 ## Scalability: `stress_test_synthetic.json`
 
 Network: `synthetic`. Generated 2026-09-27T08:42:34Z. Best of 3 seeds per point, 90s budget per run.
@@ -43,13 +44,15 @@ Figure: `scalability_synthetic.png`.
 
 ## Scalability: `stress_test_delhi.json`
 
-Network: `delhi_osm_locked`. Generated 2026-09-16T14:32:41Z. The file does not record its settings; the generator that produced it ran the best of 3 seeds per point with a 300s budget per run.
+Network: `delhi_osm`. Generated 2026-09-27T14:40:23Z. Best of 3 seeds per point, 300s budget per run.
 
 | Customers | Algorithm | Runtime (s) | Fitness | Feasible |
 |---|---|---|---|---|
-| 100 | QPSO + local search | 40.7 | 1693.4 | yes |
-| 100 | Standard PSO | 2.6 | 3858.1 | no |
-| 200 | QPSO + local search | timeout | — | — |
-| 200 | Standard PSO | 14.4 | 23218.7 | no |
+| 100 | QPSO + local search | 9.8 | 1693.4 | yes |
+| 100 | QPSO + local search, previous implementation | 67.3 | 1693.4 | yes |
+| 100 | Standard PSO | 4.1 | 3858.1 | no |
+| 200 | QPSO + local search | 33.0 | 3201.4 | no |
+| 200 | QPSO + local search, previous implementation | timeout | — | — |
+| 200 | Standard PSO | 8.9 | 23218.7 | no |
 
 Figure: `scalability_delhi.png`.
