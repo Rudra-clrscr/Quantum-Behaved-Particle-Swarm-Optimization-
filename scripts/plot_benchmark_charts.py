@@ -79,6 +79,7 @@ SCATTER_STYLE = {                     # (colour, marker)
 
 SCALE_STYLE = {
     "qpso_local_search": ("QPSO + local search", SLOT[0]),
+    "qpso_local_search_reference": ("QPSO + local search, previous implementation", MUTED),
     "standard_pso": ("Standard PSO", SLOT[1]),
 }
 

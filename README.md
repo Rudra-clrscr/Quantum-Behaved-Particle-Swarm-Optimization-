@@ -31,7 +31,7 @@ Two modifications on top of standard QPSO for CVRPTW:
    does as well, so the gain comes from local search rather than from QPSO.
    Once local search starts, the swarm almost never improves the best solution
    again ([`docs/RESULTS.md`](docs/RESULTS.md) §3–4). Local search re-walks
-   only the routes a move changes, which solves 200 customers in about 30 s;
+   only the routes a move changes, which finishes 200 customers in about 30 s (feasibly on the synthetic graph, not yet on New Delhi);
    optional early stopping (`stagnation_patience`) roughly halves the runtime
    again (§6).
 
@@ -67,7 +67,8 @@ scripts/
   run_ablations.py           # Reproduces data/ablation_results.md (exact gap, jump-cap, local search, QPSO vs PSO + LS)
   measure_swarm_contribution.py  # Reproduces data/swarm_contribution.md (swarm vs local-search share)
   run_budget_ablation.py     # Reproduces data/budget_results.md (iteration budget, early stopping)
-  generate_stress_test_cache.py # Measures scalability -> data/stress_test_synthetic.json
+  generate_stress_test_cache.py # Measures scalability -> data/stress_test_{synthetic,delhi}.json
+  freeze_osm_network.py      # Downloads an OSM road network and freezes it (needs osmnx + internet)
   plot_benchmark_charts.py   # Repeated-trial and scalability figures + data/benchmark_charts.md
 
 data/
@@ -78,7 +79,9 @@ data/
   budget_results.md/.json    # Quality and runtime at 30-150 iterations and with early stopping
   benchmark_charts.md        # Table view of every figure below (repeated trials, scalability)
   stress_test_synthetic.json # Measured scalability, synthetic graph (reproducible offline)
-  stress_test_delhi.json     # Measured scalability, New Delhi OSM extract (upstream app)
+  stress_test_delhi.json     # Measured scalability, New Delhi OSM extract (frozen network below)
+  stress_test_delhi_2026-09-16.json # The original upstream Delhi measurement, kept for comparison
+  networks/delhi_osm.json    # New Delhi road network from OpenStreetMap, frozen (ODbL)
   trials_*.png, scalability_*.png, ablation_*.png
   benchmarks/solomon/        # Solomon (1987) instance files (C101, C201, R101, R201, RC101, RC201)
   vrp_convergence.png, vrp_scalability_*.png
@@ -118,6 +121,9 @@ python scripts/run_ablations.py                                     # -> data/ab
 python scripts/measure_swarm_contribution.py                        # -> data/swarm_contribution.md
 python scripts/run_budget_ablation.py                               # -> data/budget_results.md
 python scripts/generate_stress_test_cache.py                        # -> data/stress_test_synthetic.json
+python scripts/generate_stress_test_cache.py --network data/networks/delhi_osm.json --sizes 100 200 \
+    --budget 300 --out data/stress_test_delhi.json \
+    --algorithms qpso_local_search qpso_local_search_reference standard_pso   # -> data/stress_test_delhi.json
 python scripts/plot_benchmark_charts.py                             # -> data/benchmark_charts.md + figures
 python -m app.core.benchmark_vrp                                    # convergence/scalability plots
 ```
@@ -161,7 +167,8 @@ by the strength of its evidence:
 | The gain comes from QPSO specifically | With identical local search, PSO + LS matches QPSO + LS (9 better / 10 worse / 1 tied on seeds where both are feasible) | Not supported |
 | The swarm keeps contributing once local search starts | Improved the best in 4 of 450 windows between local-search calls | Not supported: local search does the work |
 | Solomon benchmark | Feasible on 4/6; 12.5–34.7% above best-known distance | Moderate: one seed; objective is distance, not Solomon's hierarchy |
-| Scales to large instances | Feasible at 100, 150 and 200 customers in 9.8–29.8 s (synthetic graph, 90 s budget) | Moderate: one graph, best of 3 seeds; Delhi extract not re-run |
+| Finishes large instances quickly | 200 customers in 29.8 s (synthetic) and 33.0 s (New Delhi OSM); previously timed out on both | Strong for runtime |
+| Solves large instances feasibly | Feasible at 100–200 customers on the synthetic graph; New Delhi feasible at 100, infeasible at 200 | Moderate on synthetic; not supported on the real network at 200 |
 | Early stopping keeps quality at lower cost | QPSO + LS within 1% of the full run on 25/25 seeds at 54% of the runtime | Moderate: 5 seeds, one instance per size |
 | Time-dependent congestion-aware routing | 5.8% on one instance | Preliminary; see below |
 
