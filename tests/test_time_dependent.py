@@ -138,6 +138,27 @@ check("a flat profile is still never below free-flow", flat.multiplier(0) >= 1.0
 
 print()
 print("=" * 76)
+print("7. QPSO+LS outperforms baselines on time-dependent instances")
+print("=" * 76)
+
+from app.core.classical_baselines_vrp import run_ga_vrp, run_sa_vrp, run_standard_pso_vrp, run_greedy_nn_vrp
+
+ga_td = run_ga_vrp(td_problem, pop_size=30, max_iter=60, seed=1).best_solution
+sa_td = run_sa_vrp(td_problem, max_iter=60*20, seed=1).best_solution
+pso_td = run_standard_pso_vrp(td_problem, n_particles=30, max_iter=60, seed=1).best_solution
+greedy_td = run_greedy_nn_vrp(td_problem).best_solution
+
+check("QPSO+LS beats GA under time-dependence",
+      aware.total_time < ga_td.total_time, f"qpso={aware.total_time:.1f} vs ga={ga_td.total_time:.1f}")
+check("QPSO+LS beats SA under time-dependence",
+      aware.total_time < sa_td.total_time, f"qpso={aware.total_time:.1f} vs sa={sa_td.total_time:.1f}")
+check("QPSO+LS beats Standard PSO under time-dependence",
+      aware.total_time < pso_td.total_time, f"qpso={aware.total_time:.1f} vs pso={pso_td.total_time:.1f}")
+check("QPSO+LS beats Greedy NN under time-dependence",
+      aware.total_time < greedy_td.total_time, f"qpso={aware.total_time:.1f} vs greedy={greedy_td.total_time:.1f}")
+
+print()
+print("=" * 76)
 if failures:
     print(f"{len(failures)} CHECK(S) FAILED: {failures}")
     sys.exit(1)

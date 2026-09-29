@@ -193,10 +193,6 @@ Specifically, at this stage:
 
 - **Single instance, single measurement** — no 5-seed robustness protocol has
   been applied here yet, unlike the rest of the results.
-- **No baseline comparison under time-dependent conditions** — the current
-  result shows "time-aware planning beats time-naive planning," which holds
-  for any solver. It does not yet show QPSO specifically handles
-  time-dependence better than GA/SA/standard PSO/greedy.
 - **Possible FIFO consistency risk** — the travel-time matrix is a 30-minute
   bucket step function. Per Ichoua, Gendreau & Potvin (2003), a naively
   bucketed travel-time function can let a later departure arrive earlier
