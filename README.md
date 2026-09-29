@@ -63,6 +63,7 @@ app/core/
 scripts/
   run_solomon_benchmark.py   # Reproduces data/solomon_results.md
   impact_report.py           # Reproduces data/impact_report.md
+  run_time_dependent_baseline.py # Reproduces data/time_dependent_results.md
   measure_exact_vrp.py       # Exact-solver runtime by instance size
   run_ablations.py           # Reproduces data/ablation_results.md (exact gap, jump-cap, local search, QPSO vs PSO + LS)
   measure_swarm_contribution.py  # Reproduces data/swarm_contribution.md (swarm vs local-search share)
@@ -74,6 +75,7 @@ scripts/
 data/
   solomon_results.md         # Solomon CVRPTW benchmark results (this repo's headline numbers)
   impact_report.md           # Distance/time savings converted to fuel and CO2
+  time_dependent_results.md  # 5-seed robustness baseline comparison under time-dependence
   ablation_results.md/.json  # Exact-optimum gap, jump-cap and local-search ablations
   swarm_contribution.md/.json # How much of each memetic run's improvement the swarm vs local search made
   budget_results.md/.json    # Quality and runtime at 30-150 iterations and with early stopping
@@ -116,6 +118,7 @@ pytest tests/
 ```bash
 python scripts/run_solomon_benchmark.py --max-iter 200 --seed 1   # -> data/solomon_results.md
 python scripts/impact_report.py                                    # -> data/impact_report.md
+python scripts/run_time_dependent_baseline.py                       # -> data/time_dependent_results.md
 python scripts/measure_exact_vrp.py                                 # exact-solver runtime by size
 python scripts/run_ablations.py                                     # -> data/ablation_results.md
 python scripts/measure_swarm_contribution.py                        # -> data/swarm_contribution.md
@@ -191,8 +194,6 @@ This result is included as a demonstration of the formulation's value, **not**
 as a fully benchmarked contribution on the same footing as the results above.
 Specifically, at this stage:
 
-- **Single instance, single measurement** — no 5-seed robustness protocol has
-  been applied here yet, unlike the rest of the results.
 - **Possible FIFO consistency risk** — the travel-time matrix is a 30-minute
   bucket step function. Per Ichoua, Gendreau & Potvin (2003), a naively
   bucketed travel-time function can let a later departure arrive earlier
