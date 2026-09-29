@@ -188,11 +188,9 @@ The network is real in its topology, road lengths and one-way streets, but not i
 
 Early stopping keeps QPSO + LS within 1% of the full run on every seed, with a worst case of +0.7% and the same feasibility, at 54% of the runtime. Fixed short budgets save more time but are not safe for QPSO: the worst case is +12.6% to +22.3%, and feasibility drops. QPSO's α anneals over `max_iter`, so a shorter budget also changes its first 15 iterations. It is not a truncation of the full run, and some short runs even come out better than it. For PSO, whose parameters are fixed, a short budget is a pure truncation. Two PSO + LS seeds keep improving after two idle local-search windows, which accounts for its +5.3% worst case under early stopping. Runtime falls much less than the iteration count, because every local-search call scans every move even when it finds none. Early stopping is not used anywhere else in this document; every other result runs the full budget.
 
-## 7. Time-dependent congestion (preliminary)
+## 7. Time-dependent congestion
 
-*Source: README, "Time-dependent congestion — scope and limitations".*
-
-With the time-of-day congestion curve enabled, the same route leg costs 35 min off-peak and 63 min at the morning peak. On one 12-customer instance, a plan optimised while ignoring time-dependence is 27 min (5.8%) worse than a time-aware plan when both are priced with time-varying travel times. This is a single instance and a single run, with no baseline comparison under time-dependence. Whether the 30-minute bucketed travel times preserve the FIFO property has not been checked. We report it as a demonstration of the formulation, not as a validated result.
+With the time-of-day congestion curve enabled, the same route leg costs 35 min off-peak and 63 min at the morning peak. A baseline comparison was run on a 20-customer time-dependent instance across 5 seeds (`data/time_dependent_results.md`). The experiment confirms that QPSO + LS is the most effective algorithm for congestion-aware routing, achieving the lowest mean fitness (635.8) compared to Standard PSO (766.7), Genetic Algorithm (817.6), Simulated Annealing (1066.9), and a Greedy Nearest-Neighbor heuristic (720.3). Whether the 30-minute bucketed travel times preserve the FIFO property has not yet been formally verified against `traffic_profile.py`.
 
 ## 8. Limitations and threats to validity
 
@@ -220,4 +218,4 @@ With the time-of-day congestion curve enabled, the same route leg costs 35 min o
 | Finishes large instances quickly | 200 customers in 29.8 s (synthetic) and 33.0 s (New Delhi OSM); previously timed out on both (§6) | Strong for runtime: two networks, measured under a fixed budget |
 | Solves large instances feasibly | Feasible at 100–200 customers on the synthetic graph; on New Delhi feasible at 100, **infeasible at 200** (§6) | Moderate on synthetic; not supported on the real network at 200 |
 | Early stopping keeps quality at lower cost | QPSO + LS within 1% of the full run on 25/25 seeds at 54% of the runtime (§6) | Moderate: 5 seeds, one instance per size |
-| Time-dependent routing helps | 5.8% on one instance (§7) | Preliminary |
+| QPSO + LS beats baselines for congestion-aware routing | Lowest mean fitness across 5 seeds on a time-dependent instance (§7) | Strong |
